@@ -4,6 +4,8 @@
 #include <time.h>
 #include <stdlib.h>
 #include <math.h>
+#include <aliases.h> 
+
 void TextColor(int x)
 {
     HANDLE h= GetStdHandle(STD_OUTPUT_HANDLE);
