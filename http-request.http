@@ -1,0 +1,19 @@
+###
+DELETE http://localhost:8080/api/v1/student/1
+
+<> 2022-06-27T161209.404.json
+<> 2022-06-27T161151.404.json
+<> 2022-06-27T161133.404.json
+<> 2022-06-27T161059.404.json
+
+###
+POST http://localhost:8080/api/v1/student/
+Content-Type: application/json
+
+{
+  "name": "Van",
+  "email": "van@phuoc",
+  "dob": "2003-03-03"
+}
+###
+PUT http://localhost:8080/api/v1/student/1?name=XuanVan&email=xuanvan@phuocvy
