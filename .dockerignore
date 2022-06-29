@@ -2,5 +2,4 @@ target/
 .idea/
 *.iml
 *.iws
-.sonar/
-.sonarlint/
+target
