@@ -37,9 +37,9 @@ public class StudentController {
     }
 
     @PostMapping("/saveStudent")
-    public String saveStudent(@ModelAttribute Student student) {
+    public ModelAndView saveStudent(@ModelAttribute Student student) {
         eRepo.save(student);
-        return "redirect:/list";
+        return showStudent();
     }
 
     @GetMapping("/showUpdateForm")
@@ -50,16 +50,8 @@ public class StudentController {
     }
 
     @GetMapping("/deleteStudent")
-    public String deleteStudent(@RequestParam Long studentId) {
+    public ModelAndView deleteStudent(@RequestParam Long studentId) {
         eRepo.deleteById(studentId);
-        return "redirect:/list";
-    }
-
-    @PutMapping(path = "{studentId}")
-    public void updateStudent(
-            @PathVariable("studentId") Long studentId,
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) String email){
-        studentService.updateStudent(studentId, name, email);
+        return showStudent();
     }
 }
