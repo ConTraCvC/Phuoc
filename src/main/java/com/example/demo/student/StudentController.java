@@ -2,33 +2,57 @@ package com.example.demo.student;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "api/v1/student")
 public class StudentController {
 
 
     private final StudentService studentService;
+
+    @Autowired
+    private StudentRepository eRepo;
+
     @Autowired
     public StudentController(StudentService studentService) {
         this.studentService = studentService;
     }
 
-    @GetMapping
-    public List<Student> getStudents(){
-        return studentService.getStudents();
+    @GetMapping({"/showStudent", "/", "/list"})
+    public ModelAndView showStudent(){
+        ModelAndView mav =new ModelAndView("list-student");
+        List<Student> list = eRepo.findAll();
+        mav.addObject("student", list);
+        return mav;
     }
 
-    @PostMapping
-    public void registerNewStudent(@RequestBody Student student) throws IllegalAccessException {
-        studentService.addNewStudent(student);
+    @GetMapping("/addStudentForm")
+    public ModelAndView addStudentForm(){
+        ModelAndView mav = new ModelAndView("add-student-form");
+        Student newStudent = new Student();
+        mav.addObject("student", newStudent);
+        return mav;
     }
 
-    @DeleteMapping(path = "{studentId}")
-    public void deleteStudent(@PathVariable("studentId") Long studentId){
-        studentService.deleteStudent(studentId);
+    @PostMapping("/saveStudent")
+    public String saveStudent(@ModelAttribute Student student) {
+        eRepo.save(student);
+        return "redirect:/list";
+    }
+
+    @GetMapping("/showUpdateForm")
+    public ModelAndView showUpdateForm(@RequestParam Long studentId){
+        ModelAndView mav = new ModelAndView("add-student-form");
+        Student student = eRepo.findById(studentId).get();
+        return mav;
+    }
+
+    @GetMapping("/deleteStudent")
+    public String deleteStudent(@RequestParam Long studentId) {
+        eRepo.deleteById(studentId);
+        return "redirect:/list";
     }
 
     @PutMapping(path = "{studentId}")
