@@ -1,14 +1,14 @@
 <html lang="en">
 <html xmlns="http://www.thymeleaf.org">
 <head>
-    <title>Add VOZER</title>
+    <title>Add Student</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
           crossorigin="anonymous">
 </head>
 <body>
 <div class="container">
-    <h2>Add VOZER</h2>
+    <h2>Add Student</h2>
     <hr/>
     <form th:action="@{/saveStudent}" th:object="${student}" method="POST">
         <input type="number" th:field="*{id}" palceholder="Enter id" class="form-control col-4 mb-4" />
