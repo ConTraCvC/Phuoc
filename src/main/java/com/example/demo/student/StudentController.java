@@ -42,10 +42,11 @@ public class StudentController {
         return showStudent();
     }
 
-    @GetMapping("/showUpdateForm")
+    @GetMapping ("/showUpdateForm")
     public ModelAndView showUpdateForm(@RequestParam Long studentId){
         ModelAndView mav = new ModelAndView("add-student-form");
         Student student = eRepo.findById(studentId).get();
+        mav.addObject("student", student);
         return mav;
     }
 
