@@ -9,7 +9,6 @@ import java.util.List;
 @RestController
 public class StudentController {
 
-
     private final StudentService studentService;
 
     @Autowired
