@@ -1,20 +1,24 @@
 <html lang="en">
 <html xmlns="http://www.thymeleaf.org">
 <head>
-    <title>Add Student</title>
+    <title>Add User</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
           crossorigin="anonymous">
 </head>
 <body>
 <div class="container">
-    <h2>Add Student</h2>
+    <h2>Add User</h2>
     <hr/>
     <form th:action="@{/saveStudent}" th:object="${student}" method="POST">
+        <div>ID</div>
         <input type="number" th:field="*{id}" palceholder="Enter id" class="form-control col-4 mb-4" />
+        <div>Name</div>
         <input type="text" th:field="*{name}" palceholder="Enter mail" class="form-control col-4 mb4" />
+        <div>Email</div>
         <input type="text" th:field="*{email}" palceholder="Enter email" class="form-control col-4 mb-4" />
-        <input type="string" th:field="*{dob}" palceholder="Enter dob" class="form-control col-4 mb-4" />
+        <div>Username</div>
+        <input type="string" th:field="*{username}" palceholder="Enter dob" class="form-control col-4 mb-4" />
         <button class="btn btn-primary" type="submit">Save</button>
         <input type="hidden" th:field="*{id}" />
     </form>

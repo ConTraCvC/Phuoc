@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 
 @Entity
 @Data
@@ -15,8 +14,7 @@ public class Student {
     private Long id;
     private String name;
     private String email;
-    private LocalDate dob;
+    private String username;
     @Transient
     private Integer age;
-
 }

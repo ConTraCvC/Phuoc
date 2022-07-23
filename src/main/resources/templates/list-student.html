@@ -1,7 +1,7 @@
 <html lang="en">
 <html xmlns="http://www.thymeleaf.org">
 <head>
-    <title>List of Student</title>
+    <title>List of User</title>
     <link rel="stylesheet"
           type="text/css"
           href="https://cdn.datatables.net/v/bs4/dt-1.12.1/datatables.min.css"/>
@@ -11,17 +11,17 @@
 </head>
 <body>
     <div class="container">
-        <h2>List of Student</h2>
+        <h2>List of User</h2>
         <hr/>
-        <a th:href="@{/addStudentForm}" class="btn btn-primary mb-2">Add Student</a>
-        <a href="https://phuoc-pet-spring.herokuapp.com/login?logout" class="button">Log Out</a>
+        <a th:href="@{/addStudentForm}" class="btn btn-primary mb-2">Add User</a>
+        <a href="https://localhost:8080/login?logout" class="button">Log Out</a>
         <table class="table table-bordered table-striped" id="student-table">
             <thead>
                 <tr>
                     <th>id</th>
                     <th>name</th>
                     <th>email</th>
-                    <th>dob</th>
+                    <th>username</th>
                 </tr>
             </thead>
             <tbody>
@@ -29,7 +29,7 @@
                     <td th:text="${student.id}"></td>
                     <td th:text="${student.name}"></td>
                     <td th:text="${student.email}"></td>
-                    <td th:text="${student.dob}"></td>
+                    <td th:text="${student.username}"></td>
                     <td>
                         <a th:href="@{/showUpdateForm(studentId=${student.id})}" class="btn btn-info">Update</a>
                         <a th:href="@{/deleteStudent(studentId=${student.id})}" class="btn btn-danger">Delete</a>
