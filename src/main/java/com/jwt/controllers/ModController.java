@@ -1,7 +1,9 @@
 package com.jwt.controllers;
 
+import com.jwt.models.Role;
 import com.jwt.models.User;
 import com.jwt.repository.UserRepository;
+import com.jwt.security.services.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +23,7 @@ public class ModController {
 
   private final Logger log = LoggerFactory.getLogger(AuthController.class);
   private final UserRepository userRepository;
+  private final UserDetailsServiceImpl userDetailsService;
 
   @GetMapping("/mod")
   @PreAuthorize("hasRole('MODERATOR') || hasRole('ADMIN')")
@@ -43,4 +46,5 @@ public class ModController {
     userRepository.deleteById(id);
     return ResponseEntity.ok().build();
   }
+
 }

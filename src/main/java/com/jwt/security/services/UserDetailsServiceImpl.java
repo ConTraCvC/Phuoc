@@ -27,17 +27,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     return UserDetailsImpl.build(user);
   }
-
-//  public ErrorMessage setRoleCode(Role roles) {
-//    try {
-//      userRepository.setRoles(roles.getId());
-//    } catch (Exception e) {
-//      return new ErrorMessage()
-//              .setErrors(Collections.singletonList("Role's not existed"));
-//    }
-//    return new ErrorMessage().setEdesc("Username not existed");
-//  }
-
 }
 
 
