@@ -1,7 +1,7 @@
 package com.jwt.controllers;
 
-import com.jwt.models.Role;
 import com.jwt.models.User;
+import com.jwt.payload.request.ChangePasswordRequest;
 import com.jwt.repository.UserRepository;
 import com.jwt.security.services.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,6 @@ public class ModController {
 
   private final Logger log = LoggerFactory.getLogger(AuthController.class);
   private final UserRepository userRepository;
-  private final UserDetailsServiceImpl userDetailsService;
 
   @GetMapping("/mod")
   @PreAuthorize("hasRole('MODERATOR') || hasRole('ADMIN')")

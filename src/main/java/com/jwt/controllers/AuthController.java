@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 
 import com.jwt.models.Role;
+import com.jwt.payload.request.ChangePasswordRequest;
 import com.jwt.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,6 +41,7 @@ public class AuthController {
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
   private final PasswordEncoder encoder;
+  private final BCryptPasswordEncoder bCryptPasswordEncoder;
   private final JwtUtils jwtUtils;
 
   @PostMapping("/signin")
@@ -114,6 +117,20 @@ public class AuthController {
     userRepository.save(user);
 
     return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+  }
+
+  @PostMapping("/changePassword")
+  public String changePassword(@RequestBody ChangePasswordRequest changePassword){
+    User user = userRepository.findByEmail(changePassword.getEmail());
+    System.out.println(user);
+    if (user == null) {
+      return ("Username not existed");
+    }
+    if(!bCryptPasswordEncoder.matches(changePassword.getOldPassword(), user.getPassword())){
+      return "Invalid Old Password";
+    }
+    userRepository.changePassword(encoder.encode(changePassword.getNewPassword()), changePassword.getEmail());
+    return "Password Changed Successfully";
   }
 
 }
