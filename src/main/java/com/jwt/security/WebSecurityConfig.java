@@ -1,8 +1,11 @@
 package com.jwt.security;
 
+import com.jwt.payload.request.MailSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -17,6 +20,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.jwt.security.jwt.AuthEntryPointJwt;
 import com.jwt.security.jwt.AuthTokenFilter;
 import com.jwt.security.services.UserDetailsServiceImpl;
+
+import java.util.Properties;
 
 @RequiredArgsConstructor
 @Configuration
@@ -52,6 +57,24 @@ public class WebSecurityConfig {
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
+  }
+
+  @Bean
+  public JavaMailSender getJavaMailSender() {
+    JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+    mailSender.setHost("smtp.gmail.com");
+    mailSender.setPort(587);
+
+    mailSender.setUsername(MailSender.email);
+    mailSender.setPassword(MailSender.password);
+
+    Properties props = mailSender.getJavaMailProperties();
+    props.put("mail.transport.protocol", "smtp");
+    props.put("mail.smtp.auth", "false");
+    props.put("mail.smtp.starttls.enable", "true");
+    props.put("mail.debug", "true");
+
+    return mailSender;
   }
   
   @Bean

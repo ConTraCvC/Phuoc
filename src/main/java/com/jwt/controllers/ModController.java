@@ -1,9 +1,7 @@
 package com.jwt.controllers;
 
 import com.jwt.models.User;
-import com.jwt.payload.request.ChangePasswordRequest;
 import com.jwt.repository.UserRepository;
-import com.jwt.security.services.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
