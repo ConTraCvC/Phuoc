@@ -2,6 +2,7 @@ package com.jwt.security.services;
 
 import com.jwt.models.User;
 import com.jwt.payload.request.ChangePasswordRequest;
+import com.jwt.repository.PasswordResetTokenRepository;
 import com.jwt.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.Optional;
 import java.util.UUID;
@@ -18,8 +20,10 @@ import java.util.UUID;
 @Log4j2
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PasswordResetImpl implements PasswordReset{
 
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final UserRepository userRepository;
     private final AccountControl accountControl;
     private final PasswordEncoder encoder;
@@ -65,6 +69,7 @@ public class PasswordResetImpl implements PasswordReset{
         Optional<User> user = accountControl.getUserByPasswordResetToken(token, new User());
         if(user.isPresent()){
             accountControl.changePassword(user.get(), encoder.encode(password.getNewPassword()));
+            passwordResetTokenRepository.deleteByToken(token);
             return "Password Reset Successfully";
         } else {
             return "Invalid Token";
