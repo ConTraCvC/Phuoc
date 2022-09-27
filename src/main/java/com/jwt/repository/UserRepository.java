@@ -1,6 +1,5 @@
 package com.jwt.repository;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.jetbrains.annotations.NotNull;

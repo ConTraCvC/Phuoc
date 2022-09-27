@@ -1,9 +1,11 @@
 package com.jwt.controllers;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import com.jwt.payload.request.ChangePasswordRequest;
 import com.jwt.security.services.AccountControl;
+import com.jwt.security.services.PasswordReset;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,7 @@ import com.jwt.payload.request.SignupRequest;
 @RequestMapping("/auth")
 public class AuthController {
   private final AccountControl accountControl;
+  private final PasswordReset passwordReset;
 
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -32,15 +35,16 @@ public class AuthController {
     return ResponseEntity.ok(accountControl.changePassword(changePassword));
   }
 
-//  @PostMapping("/resetPassword")
-//  public String resetPassword(@RequestBody ChangePasswordRequest resetPassword,
-//                              HttpServletRequest request) {
-//    User user = userRepository.findByEmail(resetPassword.getEmail());
-//    String token = null;
-//    if (user != null) {
-//
-//    }
-//  }
+  @PostMapping("/resetPassword")
+  public ResponseEntity<String> resetPassword(@RequestBody ChangePasswordRequest resetPassword,
+                                              HttpServletRequest request) {
+    return ResponseEntity.ok(passwordReset.resetPassword(resetPassword, request));
+  }
 
+  @PostMapping("/savePassword")
+  public ResponseEntity<String> savePassword( @RequestParam("token") String token,
+                                              @RequestBody ChangePasswordRequest savePassword){
+    return ResponseEntity.ok(passwordReset.savePassword(token, savePassword));
+  }
 
 }

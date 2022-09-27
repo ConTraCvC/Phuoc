@@ -1,17 +1,17 @@
 package com.jwt.security.services;
 
-import com.jwt.models.ERole;
-import com.jwt.models.Role;
-import com.jwt.models.User;
+import com.jwt.models.*;
 import com.jwt.payload.request.ChangePasswordRequest;
 import com.jwt.payload.request.LoginRequest;
 import com.jwt.payload.request.SignupRequest;
 import com.jwt.payload.response.JwtResponse;
 import com.jwt.payload.response.MessageResponse;
+import com.jwt.repository.PasswordResetTokenRepository;
 import com.jwt.repository.RoleRepository;
 import com.jwt.repository.UserRepository;
 import com.jwt.security.jwt.JwtUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,21 +24,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AccountControlImpl implements AccountControl {
-
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder encoder;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
 
     @Override
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -127,6 +126,41 @@ public class AccountControlImpl implements AccountControl {
         }
         userRepository.changePassword(encoder.encode(changePassword.getNewPassword()), changePassword.getEmail());
         return "Password Changed Successfully";
+    }
+
+    @Override
+    public String validatePasswordResetToken(String token) {
+        PasswordResetToken passwordResetToken
+                = passwordResetTokenRepository.findByToken(token);
+        if (passwordResetToken == null) {
+            return "invalid";
+        }
+        Calendar cal = Calendar.getInstance();
+
+        if ((passwordResetToken.getExpirationTime().getTime()
+                - cal.getTime().getTime()) <= 0) {
+            passwordResetTokenRepository.delete(passwordResetToken);
+            return "expired";
+        }
+        return "valid";
+    }
+
+    @Override
+    public void createPasswordResetTokenForUser(User user, String token) {
+        PasswordResetToken passwordResetToken
+                = new PasswordResetToken(token, user);
+        passwordResetTokenRepository.save(passwordResetToken);
+    }
+
+    @Override
+    public Optional<User> getUserByPasswordResetToken(String token, User user) {
+        return Optional.ofNullable(passwordResetTokenRepository.findByToken(token).getUser());
+    }
+
+    @Override
+    public void changePassword(User user, String newPassword) {
+        user.setPassword(newPassword);
+        userRepository.save(user);
     }
 
 }
