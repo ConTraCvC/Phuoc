@@ -6,6 +6,8 @@ import com.jwt.repository.PasswordResetTokenRepository;
 import com.jwt.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,15 +22,16 @@ import java.util.UUID;
 @Log4j2
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class PasswordResetImpl implements PasswordReset{
 
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final UserRepository userRepository;
     private final AccountControl accountControl;
     private final PasswordEncoder encoder;
+    private final JavaMailSender mailSender;
 
     @Override
+    @Transactional
     public String resetPassword(@RequestBody ChangePasswordRequest password, HttpServletRequest request) {
         User user = userRepository.findByEmail(password.getEmail());
         String token = null;
@@ -36,6 +39,16 @@ public class PasswordResetImpl implements PasswordReset{
             token = UUID.randomUUID().toString();
             accountControl.createPasswordResetTokenForUser(user, token);
             passwordResetTokenMail(applicationUrl(request), token);
+        }
+        SimpleMailMessage message = new SimpleMailMessage();
+        try {
+            message.setTo(password.getEmail());
+            message.setSubject("Click the link to Reset your Password: ");
+            message.setText(passwordResetTokenMail(applicationUrl(request), token));
+            mailSender.send(message);
+        } catch (Exception e) {
+            passwordResetTokenRepository.deleteByToken(token);
+            return "Invalid email address or mail server";
         }
         return passwordResetTokenMail(applicationUrl(request), token);
     }
@@ -60,6 +73,7 @@ public class PasswordResetImpl implements PasswordReset{
     }
 
     @Override
+    @Transactional
     public String savePassword(@Valid @RequestParam("token") String token, @Valid
                                @RequestBody ChangePasswordRequest password){
         String result = accountControl.validatePasswordResetToken(token);

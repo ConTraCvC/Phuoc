@@ -1,6 +1,5 @@
 package com.jwt.security;
 
-import com.jwt.payload.request.MailSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -65,12 +64,12 @@ public class WebSecurityConfig {
     mailSender.setHost("smtp.gmail.com");
     mailSender.setPort(587);
 
-    mailSender.setUsername(MailSender.email);
-    mailSender.setPassword(MailSender.password);
+    mailSender.setUsername("cdn11phuoc@gmail.com");
+    mailSender.setPassword("xjunjzyozfxzjiyy");
 
     Properties props = mailSender.getJavaMailProperties();
     props.put("mail.transport.protocol", "smtp");
-    props.put("mail.smtp.auth", "false");
+    props.put("mail.smtp.auth", "true");
     props.put("mail.smtp.starttls.enable", "true");
     props.put("mail.debug", "true");
 

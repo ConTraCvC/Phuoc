@@ -2,6 +2,9 @@ package com.jwt.controllers;
 
 import com.jwt.models.User;
 import com.jwt.repository.UserRepository;
+import com.twilio.Twilio;
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +45,17 @@ public class ModController {
     log.info("Request to delete group: {}", id);
     userRepository.deleteById(id);
     return ResponseEntity.ok().build();
+  }
+
+  @GetMapping(value = "/sendSMS")
+  public ResponseEntity<String> sendSMS() {
+
+    Twilio.init("AC428df5bd302a88e1e314d9ece0159181", "ed155b8bc699ea367ec1c315cc63e4f8");
+
+    Message.creator(new PhoneNumber("+84866682422"),
+            new PhoneNumber("+19497495157"), "ALo 11111").create();
+
+    return new ResponseEntity<String>("Message sent successfully", HttpStatus.OK);
   }
 
 }
