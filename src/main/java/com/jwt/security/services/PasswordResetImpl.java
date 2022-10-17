@@ -22,6 +22,7 @@ import java.util.UUID;
 @Log4j2
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PasswordResetImpl implements PasswordReset{
 
     private final PasswordResetTokenRepository passwordResetTokenRepository;
@@ -31,7 +32,6 @@ public class PasswordResetImpl implements PasswordReset{
     private final JavaMailSender mailSender;
 
     @Override
-    @Transactional
     public String resetPassword(@RequestBody ChangePasswordRequest password, HttpServletRequest request) {
         User user = userRepository.findByEmail(password.getEmail());
         String token = null;
@@ -40,16 +40,16 @@ public class PasswordResetImpl implements PasswordReset{
             accountControl.createPasswordResetTokenForUser(user, token);
             passwordResetTokenMail(applicationUrl(request), token);
         }
-        SimpleMailMessage message = new SimpleMailMessage();
-        try {
-            message.setTo(password.getEmail());
-            message.setSubject("Click the link to Reset your Password: ");
-            message.setText(passwordResetTokenMail(applicationUrl(request), token));
-            mailSender.send(message);
-        } catch (Exception e) {
-            passwordResetTokenRepository.deleteByToken(token);
-            return "Invalid email address or mail server";
-        }
+//        SimpleMailMessage message = new SimpleMailMessage();
+//        try {
+//            message.setTo(password.getEmail());
+//            message.setSubject("Limited time to 10 minutes. Click the link to Reset your Password: ");
+//            message.setText(passwordResetTokenMail(applicationUrl(request), token));
+//            mailSender.send(message);
+//        } catch (Exception e) {
+//            passwordResetTokenRepository.deleteByToken(token);
+//            return "Invalid email address or mail server";
+//        }
         return passwordResetTokenMail(applicationUrl(request), token);
     }
 
@@ -59,7 +59,7 @@ public class PasswordResetImpl implements PasswordReset{
                         + "/auth/savePassword?token="
                         + token;
 
-        log.info("Click the link to Reset your Password: {}",
+        log.info("Limited time to 10 minutes. Click the link to Reset your Password: {}",
                 url);
         return url;
     }
@@ -73,7 +73,6 @@ public class PasswordResetImpl implements PasswordReset{
     }
 
     @Override
-    @Transactional
     public String savePassword(@Valid @RequestParam("token") String token, @Valid
                                @RequestBody ChangePasswordRequest password){
         String result = accountControl.validatePasswordResetToken(token);

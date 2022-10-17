@@ -24,4 +24,6 @@ public interface AccountControl {
     Optional<User> getUserByPasswordResetToken(String token, User user);
 
     void changePassword(User user, String newPassword);
+
+    void createPasswordResetOtp(User user, int otp);
 }

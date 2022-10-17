@@ -1,7 +1,11 @@
 package com.jwt.controllers;
 
 import com.jwt.models.User;
+import com.jwt.payload.request.ChangePasswordRequest;
+import com.jwt.payload.request.Otp;
+import com.jwt.repository.OtpRepository;
 import com.jwt.repository.UserRepository;
+import com.jwt.security.services.AccountControl;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -24,12 +29,22 @@ public class ModController {
 
   private final Logger log = LoggerFactory.getLogger(AuthController.class);
   private final UserRepository userRepository;
+  private final AccountControl accountControl;
+
+  private final OtpRepository otpRepository;
 
   @GetMapping("/mod")
   @PreAuthorize("hasRole('MODERATOR') || hasRole('ADMIN')")
   List<User> getUser() {
     return userRepository.findAll();
   }
+
+//  @GetMapping("/user")
+//  ResponseEntity<User> getUser(String username) {
+//    Optional<User> user = userRepository.findByUsername(username);
+//    return user.map(response -> ResponseEntity.ok().body(response))
+//            .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+//  }
 
   @GetMapping("/user/{id}")
   @PreAuthorize("hasRole('MODERATOR') || hasRole('ADMIN')")
@@ -48,13 +63,19 @@ public class ModController {
   }
 
   @GetMapping(value = "/sendSMS")
-  public ResponseEntity<String> sendSMS() {
+  public ResponseEntity<?> sendSMS(@RequestBody ChangePasswordRequest password) {
 
-    Twilio.init("AC428df5bd302a88e1e314d9ece0159181", "ed155b8bc699ea367ec1c315cc63e4f8");
+    Twilio.init("AC428df5bd302a88e1e314d9ece0159181", "a2adc5cf28e45d9acd0c7400b6fdbeb5");
+    User user = userRepository.findByEmail(password.getEmail());
+    Random r = new Random();
+    int otp = 100000 + r.nextInt(800000);
+    accountControl.createPasswordResetOtp(user, otp);
 
+//    String otp = otpService.generateOtp();
+//    Long otpExpriedAt = otpService.getOtpExpriedAt();
     Message.creator(new PhoneNumber("+84866682422"),
-            new PhoneNumber("+19497495157"), "ALo 11111").create();
-
+            new PhoneNumber("+19497495157"),
+            String.valueOf(otp)).create();
     return new ResponseEntity<String>("Message sent successfully", HttpStatus.OK);
   }
 

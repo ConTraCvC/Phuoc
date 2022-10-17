@@ -3,9 +3,11 @@ package com.jwt.security.services;
 import com.jwt.models.*;
 import com.jwt.payload.request.ChangePasswordRequest;
 import com.jwt.payload.request.LoginRequest;
+import com.jwt.payload.request.Otp;
 import com.jwt.payload.request.SignupRequest;
 import com.jwt.payload.response.JwtResponse;
 import com.jwt.payload.response.MessageResponse;
+import com.jwt.repository.OtpRepository;
 import com.jwt.repository.PasswordResetTokenRepository;
 import com.jwt.repository.RoleRepository;
 import com.jwt.repository.UserRepository;
@@ -38,6 +40,7 @@ public class AccountControlImpl implements AccountControl {
     private final PasswordEncoder encoder;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final OtpRepository otpRepository;
 
     @Override
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -161,6 +164,12 @@ public class AccountControlImpl implements AccountControl {
     public void changePassword(User user, String newPassword) {
         user.setPassword(newPassword);
         userRepository.save(user);
+    }
+
+    @Override
+    public void createPasswordResetOtp(User user, int otp) {
+        Otp otpCode = new Otp(user, otp);
+        otpRepository.save(otpCode);
     }
 
 }
