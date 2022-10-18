@@ -3,7 +3,6 @@ package com.jwt.security.services;
 import com.jwt.models.User;
 import com.jwt.payload.request.ChangePasswordRequest;
 import com.jwt.payload.request.LoginRequest;
-import com.jwt.payload.request.Otp;
 import com.jwt.payload.request.SignupRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;

@@ -1,7 +1,6 @@
 package com.jwt.security.services;
 
 import com.jwt.payload.request.ChangePasswordRequest;
-import com.jwt.payload.request.Otp;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
