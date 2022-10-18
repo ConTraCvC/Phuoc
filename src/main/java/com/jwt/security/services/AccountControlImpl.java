@@ -177,14 +177,14 @@ public class AccountControlImpl implements AccountControl {
     }
 
     @Override
-    public void changePassword(User user, String newPassword) {
-        user.setPassword(newPassword);
-        userRepository.save(user);
+    public Optional<User> getUserByPasswordResetToken(String token, User user) {
+        return Optional.ofNullable(passwordResetTokenRepository.findByToken(token).getUser());
     }
 
     @Override
-    public Optional<User> getUserByPasswordResetToken(String token, User user) {
-        return Optional.ofNullable(passwordResetTokenRepository.findByToken(token).getUser());
+    public void changePassword(User user, String newPassword) {
+        user.setPassword(newPassword);
+        userRepository.save(user);
     }
 
     @Override
