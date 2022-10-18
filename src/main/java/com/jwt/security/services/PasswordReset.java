@@ -1,6 +1,7 @@
 package com.jwt.security.services;
 
 import com.jwt.payload.request.ChangePasswordRequest;
+import com.jwt.payload.request.Otp;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -12,4 +13,7 @@ public interface PasswordReset {
 
     String savePassword(@RequestParam("token") String token,
                         @RequestBody ChangePasswordRequest password);
+
+    String saveOtpPassword(@RequestParam("otp") int otp,
+                           @RequestBody ChangePasswordRequest password);
 }

@@ -2,8 +2,6 @@ package com.jwt.controllers;
 
 import com.jwt.models.User;
 import com.jwt.payload.request.ChangePasswordRequest;
-import com.jwt.payload.request.Otp;
-import com.jwt.repository.OtpRepository;
 import com.jwt.repository.UserRepository;
 import com.jwt.security.services.AccountControl;
 import com.twilio.Twilio;
@@ -30,8 +28,6 @@ public class ModController {
   private final Logger log = LoggerFactory.getLogger(AuthController.class);
   private final UserRepository userRepository;
   private final AccountControl accountControl;
-
-  private final OtpRepository otpRepository;
 
   @GetMapping("/mod")
   @PreAuthorize("hasRole('MODERATOR') || hasRole('ADMIN')")
@@ -63,20 +59,17 @@ public class ModController {
   }
 
   @GetMapping(value = "/sendSMS")
-  public ResponseEntity<?> sendSMS(@RequestBody ChangePasswordRequest password) {
+  public ResponseEntity<?> saveOtpPassword(@RequestBody ChangePasswordRequest password) {
 
-    Twilio.init("AC428df5bd302a88e1e314d9ece0159181", "a2adc5cf28e45d9acd0c7400b6fdbeb5");
+    Twilio.init("AC428df5bd302a88e1e314d9ece0159181", "39a084170d74b89e3d96382d2311d784");
     User user = userRepository.findByEmail(password.getEmail());
     Random r = new Random();
-    int otp = 100000 + r.nextInt(800000);
-    accountControl.createPasswordResetOtp(user, otp);
-
-//    String otp = otpService.generateOtp();
-//    Long otpExpriedAt = otpService.getOtpExpriedAt();
+    int otpCode = 100000 + r.nextInt(800000);
+    accountControl.createPasswordResetOtp(user, otpCode);
     Message.creator(new PhoneNumber("+84866682422"),
             new PhoneNumber("+19497495157"),
-            String.valueOf(otp)).create();
-    return new ResponseEntity<String>("Message sent successfully", HttpStatus.OK);
+            "Limited OTP code to 10 minutes: " + otpCode).create();
+    return ResponseEntity.ok("OTP Send Successfully");
   }
 
 }

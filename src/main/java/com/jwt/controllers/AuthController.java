@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import com.jwt.payload.request.ChangePasswordRequest;
+import com.jwt.payload.request.Otp;
 import com.jwt.security.services.AccountControl;
 import com.jwt.security.services.PasswordReset;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class AuthController {
   }
 
   @PostMapping("/changePassword")
-  public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest changePassword){
+  public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest changePassword) {
     return ResponseEntity.ok(accountControl.changePassword(changePassword));
   }
 
@@ -42,9 +43,15 @@ public class AuthController {
   }
 
   @PostMapping("/savePassword")
-  public ResponseEntity<String> savePassword( @RequestParam("token") String token,
-                                              @RequestBody ChangePasswordRequest savePassword){
+  public ResponseEntity<String> savePassword(@RequestParam("token") String token,
+                                             @RequestBody ChangePasswordRequest savePassword) {
     return ResponseEntity.ok(passwordReset.savePassword(token, savePassword));
+  }
+
+  @PostMapping("/otp")
+  public ResponseEntity<?> saveOtpPassword(@RequestParam("otp") int otp,
+                                                @RequestBody ChangePasswordRequest savePassword) {
+    return ResponseEntity.ok(passwordReset.saveOtpPassword(otp, savePassword));
   }
 
 }

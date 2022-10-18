@@ -3,6 +3,7 @@ package com.jwt.security.services;
 import com.jwt.models.User;
 import com.jwt.payload.request.ChangePasswordRequest;
 import com.jwt.payload.request.LoginRequest;
+import com.jwt.payload.request.Otp;
 import com.jwt.payload.request.SignupRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +19,7 @@ public interface AccountControl {
     String changePassword(@Valid @RequestBody ChangePasswordRequest changePassword);
 
     String validatePasswordResetToken(String token);
+    String validatePasswordResetOtp(int otp);
 
     void createPasswordResetTokenForUser(User user, String token);
 
@@ -26,4 +28,6 @@ public interface AccountControl {
     void changePassword(User user, String newPassword);
 
     void createPasswordResetOtp(User user, int otp);
+
+    Optional<User> getUserByOtp(int otp, User user);
 }

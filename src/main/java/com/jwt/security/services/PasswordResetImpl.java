@@ -2,11 +2,11 @@ package com.jwt.security.services;
 
 import com.jwt.models.User;
 import com.jwt.payload.request.ChangePasswordRequest;
+import com.jwt.repository.OtpRepository;
 import com.jwt.repository.PasswordResetTokenRepository;
 import com.jwt.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,6 +29,7 @@ public class PasswordResetImpl implements PasswordReset{
     private final UserRepository userRepository;
     private final AccountControl accountControl;
     private final PasswordEncoder encoder;
+    private final OtpRepository otpRepository;
     private final JavaMailSender mailSender;
 
     @Override
@@ -73,8 +74,8 @@ public class PasswordResetImpl implements PasswordReset{
     }
 
     @Override
-    public String savePassword(@Valid @RequestParam("token") String token, @Valid
-                               @RequestBody ChangePasswordRequest password){
+    public String savePassword(@Valid @RequestParam("token") String token,
+                               @Valid @RequestBody ChangePasswordRequest password){
         String result = accountControl.validatePasswordResetToken(token);
         if(!result.equalsIgnoreCase("valid")){
             return "Invalid Token";
@@ -86,6 +87,23 @@ public class PasswordResetImpl implements PasswordReset{
             return "Password Reset Successfully";
         } else {
             return "Invalid Token";
+        }
+    }
+
+    @Override
+    public String saveOtpPassword(@Valid @RequestParam("otp") int otp,
+                                  @Valid @RequestBody ChangePasswordRequest password) {
+        String result = accountControl.validatePasswordResetOtp(otp);
+        if (!result.equalsIgnoreCase("valid")) {
+            return "Invalid OTP";
+        }
+        Optional<User> user = accountControl.getUserByOtp(otp, new User());
+        if(user.isPresent()){
+            accountControl.changePassword(user.get(), encoder.encode(password.getNewPassword()));
+            otpRepository.deleteBy(otp);
+            return "Password Reset Successfully";
+        } else {
+            return "Invalid OTP";
         }
     }
 }

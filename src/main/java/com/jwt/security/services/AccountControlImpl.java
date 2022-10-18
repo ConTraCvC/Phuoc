@@ -136,16 +136,31 @@ public class AccountControlImpl implements AccountControl {
         PasswordResetToken passwordResetToken
                 = passwordResetTokenRepository.findByToken(token);
         if (passwordResetToken == null) {
-            return "invalid";
+            return "Invalid";
         }
         Calendar cal = Calendar.getInstance();
 
         if ((passwordResetToken.getExpirationTime().getTime()
                 - cal.getTime().getTime()) <= 0) {
             passwordResetTokenRepository.delete(passwordResetToken);
-            return "expired";
+            return "Expired";
         }
-        return "valid";
+        return "Valid";
+    }
+
+    @Override
+    public String validatePasswordResetOtp(int otp) {
+        Otp otpCode = otpRepository.findByOtp(otp);
+        if (otpCode == null) {
+            return "Invalid";
+        }
+        Calendar cal = Calendar.getInstance();
+
+        if((otpCode.getRealTime().getTime() - cal.getTime().getTime()) <=0){
+            otpRepository.delete(otpCode);
+            return "Expired";
+        }
+        return "Valid";
     }
 
     @Override
@@ -156,8 +171,9 @@ public class AccountControlImpl implements AccountControl {
     }
 
     @Override
-    public Optional<User> getUserByPasswordResetToken(String token, User user) {
-        return Optional.ofNullable(passwordResetTokenRepository.findByToken(token).getUser());
+    public void createPasswordResetOtp(User user, int otp) {
+        Otp otpCode = new Otp(user, otp);
+        otpRepository.save(otpCode);
     }
 
     @Override
@@ -167,9 +183,13 @@ public class AccountControlImpl implements AccountControl {
     }
 
     @Override
-    public void createPasswordResetOtp(User user, int otp) {
-        Otp otpCode = new Otp(user, otp);
-        otpRepository.save(otpCode);
+    public Optional<User> getUserByPasswordResetToken(String token, User user) {
+        return Optional.ofNullable(passwordResetTokenRepository.findByToken(token).getUser());
+    }
+
+    @Override
+    public Optional<User> getUserByOtp(int otp, User user) {
+        return Optional.ofNullable(otpRepository.findByOtp(otp).getUser());
     }
 
 }
