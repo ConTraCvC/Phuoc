@@ -4,7 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import com.jwt.payload.request.ChangePasswordRequest;
-import com.jwt.payload.request.Otp;
 import com.jwt.security.services.AccountControl;
 import com.jwt.security.services.PasswordReset;
 import lombok.RequiredArgsConstructor;
