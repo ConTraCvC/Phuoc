@@ -59,7 +59,7 @@ public class ModController {
   }
 
   @GetMapping(value = "/sendSMS")
-  public ResponseEntity<?> saveOtpPassword(@RequestBody ChangePasswordRequest password) {
+  public ResponseEntity<?> resetPasswordOTP(@RequestBody ChangePasswordRequest password) {
 
     Twilio.init("AC428df5bd302a88e1e314d9ece0159181", "39a084170d74b89e3d96382d2311d784");
     User user = userRepository.findByEmail(password.getEmail());
