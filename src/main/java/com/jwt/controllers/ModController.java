@@ -22,7 +22,7 @@ import java.util.Random;
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/rest")
+@RequestMapping("/auth")
 public class ModController {
 
   private final Logger log = LoggerFactory.getLogger(AuthController.class);
@@ -43,7 +43,7 @@ public class ModController {
 //  }
 
   @GetMapping("/user/{id}")
-  @PreAuthorize("hasRole('MODERATOR') || hasRole('ADMIN')")
+  @PreAuthorize("hasRole('USER') || hasRole('MODERATOR') || hasRole('ADMIN')")
   ResponseEntity<?> getUser(@PathVariable Long id) {
     Optional<User> user = userRepository.findById(id);
     return user.map(response -> ResponseEntity.ok().body(response))
