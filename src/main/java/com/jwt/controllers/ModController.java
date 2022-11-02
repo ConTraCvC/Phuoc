@@ -68,7 +68,7 @@ public class ModController {
     accountControl.createPasswordResetOtp(user, otpCode);
     Message.creator(new PhoneNumber("+84866682422"),
             new PhoneNumber("+19497495157"),
-            "Limited OTP code to 10 minutes: " + otpCode).create();
+            "Limited reset OTP code to 10 minutes: " + otpCode).create();
     return ResponseEntity.ok("OTP Send Successfully");
   }
 

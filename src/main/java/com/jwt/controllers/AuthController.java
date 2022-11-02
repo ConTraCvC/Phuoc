@@ -20,12 +20,12 @@ public class AuthController {
   private final AccountControl accountControl;
   private final PasswordReset passwordReset;
 
-  @PostMapping("/signin")
+  @PostMapping("/sign-in")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
     return ResponseEntity.ok(accountControl.authenticateUser(loginRequest));
   }
 
-  @PostMapping("/signup")
+  @PostMapping("/sign-up")
   public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
     return ResponseEntity.ok(accountControl.registerUser(signUpRequest));
   }
