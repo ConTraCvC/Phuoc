@@ -1,6 +1,7 @@
 package com.jwt.security.services;
 
 import com.jwt.models.User;
+import com.jwt.payload.response.UserResponse;
 import com.jwt.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,7 +22,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     User user = userRepository.findByUsername(username)
             .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
 
-    return UserDetailsImpl.build(user);
+    return UserResponse.build(user);
   }
 }
 

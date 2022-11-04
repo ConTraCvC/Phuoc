@@ -7,6 +7,7 @@ import com.jwt.payload.request.Otp;
 import com.jwt.payload.request.SignupRequest;
 import com.jwt.payload.response.JwtResponse;
 import com.jwt.payload.response.MessageResponse;
+import com.jwt.payload.response.UserResponse;
 import com.jwt.repository.OtpRepository;
 import com.jwt.repository.PasswordResetTokenRepository;
 import com.jwt.repository.RoleRepository;
@@ -51,7 +52,7 @@ public class AccountControlImpl implements AccountControl {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
 
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        UserResponse userDetails = (UserResponse) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());

@@ -1,4 +1,4 @@
-package com.jwt.security.services;
+package com.jwt.payload.response;
 
 import java.io.Serial;
 import java.util.Collection;
@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @AllArgsConstructor
-public class UserDetailsImpl implements UserDetails {
+public class UserResponse implements UserDetails {
 
   @Serial
   private static final long serialVersionUID = 1L;
@@ -27,12 +27,12 @@ public class UserDetailsImpl implements UserDetails {
 
   private Collection<? extends GrantedAuthority> authorities;
 
-  public static UserDetailsImpl build(User user) {
+  public static UserResponse build(User user) {
     List<GrantedAuthority> authorities = user.getRoles().stream()
         .map(role -> new SimpleGrantedAuthority(role.getRoleCode().name()))
         .collect(Collectors.toList());
 
-    return new UserDetailsImpl(
+    return new UserResponse(
         user.getId(), 
         user.getUsername(), 
         user.getEmail(),
@@ -87,7 +87,7 @@ public class UserDetailsImpl implements UserDetails {
       return true;
     if (o == null || getClass() != o.getClass())
       return false;
-    UserDetailsImpl user = (UserDetailsImpl) o;
+    UserResponse user = (UserResponse) o;
     return Objects.equals(id, user.id);
   }
 }
