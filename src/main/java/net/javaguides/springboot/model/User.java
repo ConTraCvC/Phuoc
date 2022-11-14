@@ -1,6 +1,7 @@
 package net.javaguides.springboot.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 
@@ -8,6 +9,7 @@ import javax.persistence.*;
 
 @Entity
 @Data
+@NoArgsConstructor
 @Table(name =  "users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 public class User {
 
@@ -31,8 +33,6 @@ public class User {
 				            name = "role_id", referencedColumnName = "id"))
 	
 	private Collection<Role> roles;
-	
-	public User() {}
 
 	public User(String firstName, String lastName, String email, String password, Collection<Role> roles) {
 		super();
