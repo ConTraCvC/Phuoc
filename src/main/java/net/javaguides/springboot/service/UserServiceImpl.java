@@ -1,7 +1,7 @@
 package net.javaguides.springboot.service;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ import net.javaguides.springboot.web.dto.UserRegistrationDto;
 @Service
 public class UserServiceImpl implements UserService{
 
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
 	
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
@@ -34,8 +34,8 @@ public class UserServiceImpl implements UserService{
 	public User save(UserRegistrationDto registrationDto) {
 		User user = new User(registrationDto.getFirstName(), 
 				registrationDto.getLastName(), registrationDto.getEmail(),
-				passwordEncoder.encode(registrationDto.getPassword()), Arrays.asList(new Role("ROLE_USER")));
-		
+				passwordEncoder.encode(registrationDto.getPassword()), Collections.singletonList(new Role("ROLE_USER")));
+
 		return userRepository.save(user);
 	}
 
