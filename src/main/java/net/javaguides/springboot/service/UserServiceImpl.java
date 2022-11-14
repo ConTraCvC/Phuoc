@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,17 +18,12 @@ import net.javaguides.springboot.repository.UserRepository;
 import net.javaguides.springboot.web.dto.UserRegistrationDto;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService{
 
 	private final UserRepository userRepository;
 	
 	private final BCryptPasswordEncoder passwordEncoder;
-	
-	public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
-		super();
-		this.userRepository = userRepository;
-		this.passwordEncoder = passwordEncoder;
-	}
 
 	@Override
 	public void save(UserRegistrationDto registrationDto) {

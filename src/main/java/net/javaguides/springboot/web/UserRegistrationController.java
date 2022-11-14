@@ -14,7 +14,7 @@ import net.javaguides.springboot.web.dto.UserRegistrationDto;
 @RequestMapping("/registration")
 public class UserRegistrationController {
 
-	private UserService userService;
+	private final UserService userService;
 
 	public UserRegistrationController(UserService userService) {
 		super();
