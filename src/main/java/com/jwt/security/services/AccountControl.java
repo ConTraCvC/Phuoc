@@ -7,11 +7,12 @@ import com.jwt.payload.request.SignupRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.Optional;
 
 public interface AccountControl {
-    ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest);
+    ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response);
 
     ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest);
 
