@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import com.jwt.payload.request.ChangePasswordRequest;
+import com.jwt.payload.request.RefreshTokenRequest;
 import com.jwt.security.services.AccountControl;
 import com.jwt.security.services.PasswordReset;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +47,11 @@ public class AuthController {
   public ResponseEntity<String> savePassword(@RequestParam("token") String token,
                                              @RequestBody ChangePasswordRequest savePassword) {
     return ResponseEntity.ok(passwordReset.savePassword(token, savePassword));
+  }
+
+  @PostMapping("/refreshToken")
+  public ResponseEntity<?> refreshtoken(@Valid @RequestBody RefreshTokenRequest request) {
+    return ResponseEntity.ok(accountControl.refreshtoken(request));
   }
 
   @PostMapping("/otp")

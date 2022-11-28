@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -21,5 +22,9 @@ public class ErrorMessage {
 
     private String edesc;
 
-    public ErrorMessage(String s) {}
+    public ErrorMessage(String s) {
+    }
+
+    public ErrorMessage(int value, Date date, String message, String description) {
+    }
 }

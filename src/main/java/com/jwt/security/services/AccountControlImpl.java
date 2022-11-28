@@ -1,17 +1,13 @@
 package com.jwt.security.services;
 
+import com.jwt.exception.TokenRefreshException;
 import com.jwt.models.*;
-import com.jwt.payload.request.ChangePasswordRequest;
-import com.jwt.payload.request.LoginRequest;
-import com.jwt.payload.request.Otp;
-import com.jwt.payload.request.SignupRequest;
+import com.jwt.payload.request.*;
 import com.jwt.payload.response.JwtResponse;
 import com.jwt.payload.response.MessageResponse;
+import com.jwt.payload.response.TokenRefreshResponse;
 import com.jwt.payload.response.UserResponse;
-import com.jwt.repository.OtpRepository;
-import com.jwt.repository.PasswordResetTokenRepository;
-import com.jwt.repository.RoleRepository;
-import com.jwt.repository.UserRepository;
+import com.jwt.repository.*;
 import com.jwt.security.jwt.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,29 +40,51 @@ public class AccountControlImpl implements AccountControl {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final OtpRepository otpRepository;
+    private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
-    public ResponseEntity<?> authenticateUser (@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    public ResponseEntity<?> authenticateUser (@Valid @RequestBody LoginRequest loginRequest,
+                                               HttpServletResponse response) {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
+        UserResponse userDetails = (UserResponse) authentication.getPrincipal();
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+//        Optional<RefreshToken> refreshTokenRemove = refreshTokenRepository.findByToken(String.valueOf(token));
+        refreshTokenRepository.deleteAll();
 //        Cookie cookie = new Cookie("token", jwt);
 //        cookie.setHttpOnly(true);
 //        cookie.setSecure(true);
 //        response.addCookie(cookie);
-        UserResponse userDetails = (UserResponse) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(new JwtResponse(jwt,
+                refreshToken.getToken(),
                 userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getEmail(),
                 roles));
+    }
+
+    @Override
+    public ResponseEntity<?> refreshtoken(@Valid @RequestBody RefreshTokenRequest request) {
+        String requestRefreshToken = request.getRefreshToken();
+
+        return refreshTokenService.findByToken(requestRefreshToken)
+                .map(refreshTokenService::verifyExpiration)
+                .map(RefreshToken::getUser)
+                .map(user -> {
+                    String token = jwtUtils.generateTokenFromUsername(user.getUsername());
+                    return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken));
+                })
+                .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
+                        "Refresh token is not exists!"));
     }
 
     @Override
