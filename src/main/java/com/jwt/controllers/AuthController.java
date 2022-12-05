@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.jwt.payload.request.LoginRequest;
 import com.jwt.payload.request.SignupRequest;
+
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -38,8 +39,8 @@ public class AuthController {
   }
 
   @PostMapping("/resetPassword")
-  public ResponseEntity<String> resetPassword(@RequestBody ChangePasswordRequest resetPassword,
-                                              HttpServletRequest request) {
+  public ResponseEntity<?> resetPassword(@RequestBody ChangePasswordRequest resetPassword,
+                                                         HttpServletRequest request) {
     return ResponseEntity.ok(passwordReset.resetPassword(resetPassword, request));
   }
 
