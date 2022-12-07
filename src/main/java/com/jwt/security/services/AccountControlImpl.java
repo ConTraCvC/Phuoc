@@ -188,9 +188,9 @@ public class AccountControlImpl implements AccountControl {
     }
 
     @Override
-    public void createPasswordResetTokenForUser(User user, String token) {
+    public void createPasswordResetTokenForUser(User user, String rsToken) {
         PasswordResetToken passwordResetToken
-                = new PasswordResetToken(token, user);
+                = new PasswordResetToken(rsToken, user);
         passwordResetTokenRepository.save(passwordResetToken);
     }
 

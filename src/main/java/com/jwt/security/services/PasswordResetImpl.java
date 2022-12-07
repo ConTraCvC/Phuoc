@@ -1,5 +1,6 @@
 package com.jwt.security.services;
 
+import com.jwt.models.PasswordResetToken;
 import com.jwt.models.User;
 import com.jwt.payload.request.ChangePasswordRequest;
 import com.jwt.payload.response.ResetPasswordResponse;
@@ -9,6 +10,7 @@ import com.jwt.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,46 +37,41 @@ public class PasswordResetImpl implements PasswordReset{
     private final JavaMailSender mailSender;
 
     @Override
-    public ResponseEntity<?> resetPassword(@RequestBody ChangePasswordRequest password, HttpServletRequest request) {
+    public ResponseEntity<?> resetPassword(@RequestBody ChangePasswordRequest password, HttpServletRequest request, PasswordResetToken resetToken) {
         User user = userRepository.findByEmail(password.getEmail());
         String token;
         if (user != null) {
-                token = UUID.randomUUID().toString();
-                accountControl.createPasswordResetTokenForUser(user, token);
-                passwordResetTokenMail(applicationUrl(request), token);
-                passwordResetTokenRepository.deleteAll();
-                applicationUrl(request);
-                return ResponseEntity.ok(new ResetPasswordResponse(token));
+            token = UUID.randomUUID().toString();
+            accountControl.createPasswordResetTokenForUser(user, token);
+            passwordResetTokenMail(applicationUrl(request), token);
+            passwordResetTokenRepository.deleteAll();
+            applicationUrl(request);
+//            SimpleMailMessage message = new SimpleMailMessage();
+//            try {
+//                message.setTo(password.getEmail());
+//                message.setSubject("Limited time to 10 minutes. Click the link to Reset your Password: ");
+//                message.setText("Hi, User.\n Forgot password?\n Here is the link to reset your password\n" + passwordResetTokenMail(applicationUrl(request), token) + "\nGood luck!");
+//                mailSender.send(message);
+//            } catch (Exception e) {
+//                passwordResetTokenRepository.deleteByToken(token);
+//                return ResponseEntity.ok("Invalid email address or mail server");
+//            }
+            return ResponseEntity.ok(new ResetPasswordResponse(token));
         }
-//        SimpleMailMessage message = new SimpleMailMessage();
-//        try {
-//            message.setTo(password.getEmail());
-//            message.setSubject("Limited time to 10 minutes. Click the link to Reset your Password: ");
-//            message.setText(passwordResetTokenMail(applicationUrl(request), token));
-//            mailSender.send(message);
-//        } catch (Exception e) {
-//            passwordResetTokenRepository.deleteByToken(token);
-//            return "Invalid email address or mail server";
-//        }
         return ResponseEntity.ok("Wrong email address");
     }
 
-    private void passwordResetTokenMail(String applicationUrl, String token) {
+    private String passwordResetTokenMail(String applicationUrl, String token) {
         String url =
                 applicationUrl
                         + "/auth/savePassword?token="
                         + token;
 
         log.info(url);
-    }
-    private String resetUrl(HttpServletRequest request) {
-        return "http://localhost:3000" + request.getContextPath();
+        return url;
     }
     private String applicationUrl(HttpServletRequest request) {
-        return "http://" +
-                request.getServerName() +
-                ":" +
-                request.getServerPort() +
+        return "http://localhost:3000" +
                 request.getContextPath();
     }
 

@@ -12,7 +12,7 @@ import java.io.IOException;
 
 public interface PasswordReset {
 
-   ResponseEntity<?> resetPassword(@RequestBody ChangePasswordRequest passwordModel, HttpServletRequest request);
+   ResponseEntity<?> resetPassword(@RequestBody ChangePasswordRequest passwordModel, HttpServletRequest request, PasswordResetToken resetToken);
 
     String savePassword(@RequestParam("token") String token,
                         @RequestBody ChangePasswordRequest password);

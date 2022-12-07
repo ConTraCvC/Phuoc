@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import com.jwt.models.PasswordResetToken;
 import com.jwt.payload.request.ChangePasswordRequest;
 import com.jwt.payload.request.RefreshTokenRequest;
 import com.jwt.security.services.AccountControl;
@@ -40,8 +41,8 @@ public class AuthController {
 
   @PostMapping("/resetPassword")
   public ResponseEntity<?> resetPassword(@RequestBody ChangePasswordRequest resetPassword,
-                                                         HttpServletRequest request) {
-    return ResponseEntity.ok(passwordReset.resetPassword(resetPassword, request));
+                                                         HttpServletRequest request, PasswordResetToken resetToken) {
+    return ResponseEntity.ok(passwordReset.resetPassword(resetPassword, request, resetToken));
   }
 
   @PostMapping("/savePassword")

@@ -4,9 +4,9 @@ import lombok.Data;
 
 @Data
 public class ResetPasswordResponse {
-  private String token;
+  private String rsToken;
 
   public ResetPasswordResponse(String token) {
-    this.token = token;
+    this.rsToken = token;
   }
 }
