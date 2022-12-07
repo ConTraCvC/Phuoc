@@ -75,6 +75,14 @@ public class PasswordResetImpl implements PasswordReset{
                 request.getContextPath();
     }
 
+//  private String applicationUrl(HttpServletRequest request) {
+//    return "http://" +
+//            request.getServerName() +
+//            ":" +
+//            request.getServerPort() +
+//            request.getContextPath();
+//  }
+
     @Override
     public String savePassword(@Valid @RequestParam("token") String token,
                                @Valid @RequestBody ChangePasswordRequest password){
