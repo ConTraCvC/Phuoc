@@ -26,6 +26,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -102,10 +104,12 @@ public class AccountControlImpl implements AccountControl {
         }
 
         // Create new user's account
+        String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\S+$).{8,20}$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(signUpRequest.getPassword());
         User user = new User(signUpRequest.getUsername(),
                 signUpRequest.getEmail(),
                 encoder.encode(signUpRequest.getPassword()));
-
         Set<String> strRoles = signUpRequest.getRole();
         Set<Role> roles = new HashSet<>();
 
@@ -134,12 +138,13 @@ public class AccountControlImpl implements AccountControl {
                 }
             });
         }
-
-        user.setRoles(roles);
-        userRepository.save(user);
-
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
-
+            user.setRoles(roles);
+        if (matcher.find()) {
+            userRepository.save(user);
+            return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+        } else {
+            return ResponseEntity.ok(new MessageResponse("Please correct the password type !"));
+        }
     }
 
     @Override
