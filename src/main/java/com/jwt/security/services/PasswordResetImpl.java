@@ -10,6 +10,7 @@ import com.jwt.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,9 +20,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Log4j2
 @Service
@@ -92,9 +94,14 @@ public class PasswordResetImpl implements PasswordReset{
         }
         Optional<User> user = accountControl.getUserByPasswordResetToken(token, new User());
         if(user.isPresent()){
-            accountControl.changePassword(user.get(), encoder.encode(password.getNewPassword()));
-            passwordResetTokenRepository.deleteByToken(token);
-            return "Password Reset Successfully";
+            String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\S+$).{8,20}$";
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(password.getNewPassword());
+            if (matcher.find()){
+                accountControl.changePassword(user.get(), encoder.encode(password.getNewPassword()));
+                passwordResetTokenRepository.deleteByToken(token);
+                return "Password Reset Successfully !";}
+            else { return "Password not match wellFormed !";}
         } else {
             return "Invalid Token";
         }
@@ -109,9 +116,14 @@ public class PasswordResetImpl implements PasswordReset{
         }
         Optional<User> user = accountControl.getUserByOtp(otp, new User());
         if(user.isPresent()){
-            accountControl.changePassword(user.get(), encoder.encode(password.getNewPassword()));
-            otpRepository.deleteBy(otp);
-            return "Password Reset Successfully";
+            String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\S+$).{8,20}$";
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(password.getNewPassword());
+            if(matcher.find()){
+                accountControl.changePassword(user.get(), encoder.encode(password.getNewPassword()));
+                otpRepository.deleteBy(otp);
+                return "Password Reset Successfully";}
+            else { return "Password not match wellFormed !";}
         } else {
             return "Invalid OTP";
         }
