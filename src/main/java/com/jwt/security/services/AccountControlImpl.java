@@ -141,9 +141,9 @@ public class AccountControlImpl implements AccountControl {
             user.setRoles(roles);
         if (matcher.find()) {
             userRepository.save(user);
-            return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+            return ResponseEntity.ok(new MessageResponse("User registered successfully !"));
         } else {
-            return ResponseEntity.ok(new MessageResponse("Please correct the password type !"));
+            return ResponseEntity.ok(new MessageResponse("Password not match wellFormed !"));
         }
     }
 
