@@ -104,7 +104,7 @@ public class AccountControlImpl implements AccountControl {
         }
 
         // Create new user's account
-        String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\S+$).{8,20}$";
+        String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\S+$).{8,30}$";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(signUpRequest.getPassword());
         User user = new User(signUpRequest.getUsername(),
