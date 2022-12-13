@@ -116,14 +116,14 @@ public class PasswordResetImpl implements PasswordReset{
     }
     Optional<User> user = accountControl.getUserByOtp(otp, new User());
     if(user.isPresent()){
-      String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\S+$).{8,30}$";
+      String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\S+$).{8,40}$";
       Pattern pattern = Pattern.compile(regex);
       Matcher matcher = pattern.matcher(password.getNewPassword());
       if(matcher.find()){
         accountControl.changePassword(user.get(), encoder.encode(password.getNewPassword()));
         otpRepository.deleteBy(otp);
         return "Password Reset Successfully";}
-      else { return "Password not match wellFormed !";}
+      else { return "Password does not match wellFormed !";}
     } else {
       return "Invalid OTP";
     }
