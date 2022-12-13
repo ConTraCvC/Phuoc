@@ -54,23 +54,23 @@ public class AccountControlImpl implements AccountControl {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
-        UserResponse userDetails = (UserResponse) authentication.getPrincipal();
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+        UserResponse userResponse = (UserResponse) authentication.getPrincipal();
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userResponse.getId());
 //        Optional<RefreshToken> refreshTokenRemove = refreshTokenRepository.findByToken(String.valueOf(token));
         refreshTokenRepository.deleteAll();
 //        Cookie cookie = new Cookie("token", jwt);
 //        cookie.setHttpOnly(true);
 //        cookie.setSecure(true);
 //        response.addCookie(cookie);
-        List<String> roles = userDetails.getAuthorities().stream()
+        List<String> roles = userResponse.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(new JwtResponse(jwt,
                 refreshToken.getToken(),
-                userDetails.getId(),
-                userDetails.getUsername(),
-                userDetails.getEmail(),
+                userResponse.getId(),
+                userResponse.getUsername(),
+                userResponse.getEmail(),
                 roles));
     }
 
