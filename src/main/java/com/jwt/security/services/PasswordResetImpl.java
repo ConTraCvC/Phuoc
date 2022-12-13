@@ -94,7 +94,7 @@ public class PasswordResetImpl implements PasswordReset{
     }
     Optional<User> user = accountControl.getUserByPasswordResetToken(token, new User());
     if(user.isPresent()){
-      String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\S+$).{8,30}$";
+      String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\S+$).{8,40}$";
       Pattern pattern = Pattern.compile(regex);
       Matcher matcher = pattern.matcher(password.getNewPassword());
       if (matcher.find()){
