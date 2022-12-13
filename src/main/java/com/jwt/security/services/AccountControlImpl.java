@@ -143,7 +143,7 @@ public class AccountControlImpl implements AccountControl {
       userRepository.save(user);
       return ResponseEntity.ok(new MessageResponse("User registered successfully !"));
     } else {
-      return ResponseEntity.ok(new MessageResponse("Password not match wellFormed !"));
+      return ResponseEntity.ok(new MessageResponse("Password does not match wellFormed !"));
     }
   }
 
