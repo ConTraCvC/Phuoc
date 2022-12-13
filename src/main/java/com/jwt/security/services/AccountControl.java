@@ -13,24 +13,24 @@ import javax.validation.Valid;
 import java.util.Optional;
 
 public interface AccountControl {
-    ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response);
+  ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response);
 
-    ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest);
+  ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest);
 
-    ResponseEntity<?> refreshtoken(@Valid @RequestBody RefreshTokenRequest request);
+  ResponseEntity<?> refreshtoken(@Valid @RequestBody RefreshTokenRequest request);
 
-    String changePassword(@Valid @RequestBody ChangePasswordRequest changePassword);
+  String changePassword(@Valid @RequestBody ChangePasswordRequest changePassword);
 
-    String validatePasswordResetToken(String token);
-    String validatePasswordResetOtp(int otp);
+  String validatePasswordResetToken(String token);
+  String validatePasswordResetOtp(int otp);
 
-    void createPasswordResetTokenForUser(User user, String token);
+  void createPasswordResetTokenForUser(User user, String token);
 
-    Optional<User> getUserByPasswordResetToken(String token, User user);
+  Optional<User> getUserByPasswordResetToken(String token, User user);
 
-    void changePassword(User user, String newPassword);
+  void changePassword(User user, String newPassword);
 
-    void createPasswordResetOtp(User user, int otp);
+  void createPasswordResetOtp(User user, int otp);
 
-    Optional<User> getUserByOtp(int otp, User user);
+  Optional<User> getUserByOtp(int otp, User user);
 }

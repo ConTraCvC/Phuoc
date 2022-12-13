@@ -10,13 +10,13 @@ import javax.transaction.Transactional;
 
 @Repository
 public interface PasswordResetTokenRepository extends JpaRepository<PasswordResetToken, Long> {
-    PasswordResetToken findByToken(String token);
+  PasswordResetToken findByToken(String token);
 
-    void deleteByToken(String token);
+  void deleteByToken(String token);
 
-    @Transactional
-    @Modifying(clearAutomatically = true)
-    // delete all except the newest one group by user_id.
-    @Query(value = "delete from password_reset_token where user_id and id not in (select * from (select max(id) as id from password_reset_token group by user_id) as t2)", nativeQuery = true)
-    void deleteAll();
+  @Transactional
+  @Modifying(clearAutomatically = true)
+  // delete all except the newest one group by user_id.
+  @Query(value = "delete from password_reset_token where user_id and id not in (select * from (select max(id) as id from password_reset_token group by user_id) as t2)", nativeQuery = true)
+  void deleteAll();
 }

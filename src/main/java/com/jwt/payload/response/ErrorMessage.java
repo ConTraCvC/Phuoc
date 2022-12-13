@@ -12,19 +12,19 @@ import java.util.List;
 @Accessors(chain = true)
 public class ErrorMessage {
 
-    private String timestamp;
+  private String timestamp;
 
-    private String status;
+  private String status;
 
-    private String path;
+  private String path;
 
-    private List<String> errors;
+  private List<String> errors;
 
-    private String edesc;
+  private String edesc;
 
-    public ErrorMessage(String s) {
-    }
+  public ErrorMessage(String s) {
+  }
 
-    public ErrorMessage(int value, Date date, String message, String description) {
-    }
+  public ErrorMessage(int value, Date date, String message, String description) {
+  }
 }

@@ -12,10 +12,10 @@ import javax.transaction.Transactional;
 @Repository
 public interface OtpRepository extends JpaRepository<Otp, Long> {
 
-    Otp findByOtp(int otp);
+  Otp findByOtp(int otp);
 
-    @Transactional
-    @Modifying(clearAutomatically = true)
-    @Query("delete from Otp c where c.otp = :otp")
-    void deleteBy(@Param("otp") int otp);
+  @Transactional
+  @Modifying(clearAutomatically = true)
+  @Query("delete from Otp c where c.otp = :otp")
+  void deleteBy(@Param("otp") int otp);
 }

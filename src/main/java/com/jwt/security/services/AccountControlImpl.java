@@ -34,191 +34,191 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class AccountControlImpl implements AccountControl {
-    private final JwtUtils jwtUtils;
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final AuthenticationManager authenticationManager;
-    private final PasswordEncoder encoder;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final PasswordResetTokenRepository passwordResetTokenRepository;
-    private final OtpRepository otpRepository;
-    private final RefreshTokenService refreshTokenService;
-    private final RefreshTokenRepository refreshTokenRepository;
+  private final JwtUtils jwtUtils;
+  private final UserRepository userRepository;
+  private final RoleRepository roleRepository;
+  private final AuthenticationManager authenticationManager;
+  private final PasswordEncoder encoder;
+  private final BCryptPasswordEncoder bCryptPasswordEncoder;
+  private final PasswordResetTokenRepository passwordResetTokenRepository;
+  private final OtpRepository otpRepository;
+  private final RefreshTokenService refreshTokenService;
+  private final RefreshTokenRepository refreshTokenRepository;
 
-    @Override
-    public ResponseEntity<?> authenticateUser (@Valid @RequestBody LoginRequest loginRequest,
-                                               HttpServletResponse response) {
+  @Override
+  public ResponseEntity<?> authenticateUser (@Valid @RequestBody LoginRequest loginRequest,
+                                             HttpServletResponse response) {
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+    Authentication authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
-        UserResponse userResponse = (UserResponse) authentication.getPrincipal();
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userResponse.getId());
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+    String jwt = jwtUtils.generateJwtToken(authentication);
+    UserResponse userResponse = (UserResponse) authentication.getPrincipal();
+    RefreshToken refreshToken = refreshTokenService.createRefreshToken(userResponse.getId());
 //        Optional<RefreshToken> refreshTokenRemove = refreshTokenRepository.findByToken(String.valueOf(token));
-        refreshTokenRepository.deleteAll();
+    refreshTokenRepository.deleteAll();
 //        Cookie cookie = new Cookie("token", jwt);
 //        cookie.setHttpOnly(true);
 //        cookie.setSecure(true);
 //        response.addCookie(cookie);
-        List<String> roles = userResponse.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
+    List<String> roles = userResponse.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.toList());
 
-        return ResponseEntity.ok(new JwtResponse(jwt,
-                refreshToken.getToken(),
-                userResponse.getId(),
-                userResponse.getUsername(),
-                userResponse.getEmail(),
-                roles));
+    return ResponseEntity.ok(new JwtResponse(jwt,
+            refreshToken.getToken(),
+            userResponse.getId(),
+            userResponse.getUsername(),
+            userResponse.getEmail(),
+            roles));
+  }
+
+  @Override
+  public ResponseEntity<?> refreshtoken(@Valid @RequestBody RefreshTokenRequest request) {
+    String requestRefreshToken = request.getRefreshToken();
+
+    return refreshTokenService.findByToken(requestRefreshToken)
+            .map(refreshTokenService::verifyExpiration)
+            .map(RefreshToken::getUser)
+            .map(user -> {
+              String token = jwtUtils.generateTokenFromUsername(user.getUsername());
+              return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken));
+            })
+            .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
+                    "Refresh token is not exists!"));
+  }
+
+  @Override
+  public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+
+    if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+      return ResponseEntity
+              .badRequest()
+              .body(new MessageResponse("Error: Username is already taken!"));
+    }
+    if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+      return ResponseEntity
+              .badRequest()
+              .body(new MessageResponse("Error: Email is already in use!"));
     }
 
-    @Override
-    public ResponseEntity<?> refreshtoken(@Valid @RequestBody RefreshTokenRequest request) {
-        String requestRefreshToken = request.getRefreshToken();
+    // Create new user's account
+    String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\S+$).{8,40}$";
+    Pattern pattern = Pattern.compile(regex);
+    Matcher matcher = pattern.matcher(signUpRequest.getPassword());
+    User user = new User(signUpRequest.getUsername(),
+            signUpRequest.getEmail(),
+            encoder.encode(signUpRequest.getPassword()));
+    Set<String> strRoles = signUpRequest.getRole();
+    Set<Role> roles = new HashSet<>();
 
-        return refreshTokenService.findByToken(requestRefreshToken)
-                .map(refreshTokenService::verifyExpiration)
-                .map(RefreshToken::getUser)
-                .map(user -> {
-                    String token = jwtUtils.generateTokenFromUsername(user.getUsername());
-                    return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken));
-                })
-                .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
-                        "Refresh token is not exists!"));
-    }
-
-    @Override
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-
-        if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Username is already taken!"));
-        }
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Email is already in use!"));
-        }
-
-        // Create new user's account
-        String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\S+$).{8,40}$";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(signUpRequest.getPassword());
-        User user = new User(signUpRequest.getUsername(),
-                signUpRequest.getEmail(),
-                encoder.encode(signUpRequest.getPassword()));
-        Set<String> strRoles = signUpRequest.getRole();
-        Set<Role> roles = new HashSet<>();
-
-        if (strRoles == null) {
+    if (strRoles == null) {
+      Role userRole = roleRepository.findByRoleCode(ERole.ROLE_USER)
+              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+      roles.add(userRole);
+    } else {
+      strRoles.forEach(role -> {
+        switch (role) {
+          case "admin" -> {
+            Role adminRole = roleRepository.findByRoleCode(ERole.ROLE_ADMIN)
+                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+            roles.add(adminRole);
+          }
+          case "mod" -> {
+            Role modRole = roleRepository.findByRoleCode(ERole.ROLE_MODERATOR)
+                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+            roles.add(modRole);
+          }
+          default -> {
             Role userRole = roleRepository.findByRoleCode(ERole.ROLE_USER)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             roles.add(userRole);
-        } else {
-            strRoles.forEach(role -> {
-                switch (role) {
-                    case "admin" -> {
-                        Role adminRole = roleRepository.findByRoleCode(ERole.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(adminRole);
-                    }
-                    case "mod" -> {
-                        Role modRole = roleRepository.findByRoleCode(ERole.ROLE_MODERATOR)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(modRole);
-                    }
-                    default -> {
-                        Role userRole = roleRepository.findByRoleCode(ERole.ROLE_USER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(userRole);
-                    }
-                }
-            });
+          }
         }
-            user.setRoles(roles);
-        if (matcher.find()) {
-            userRepository.save(user);
-            return ResponseEntity.ok(new MessageResponse("User registered successfully !"));
-        } else {
-            return ResponseEntity.ok(new MessageResponse("Password not match wellFormed !"));
-        }
+      });
     }
-
-    @Override
-    public String changePassword(@Valid @RequestBody ChangePasswordRequest changePassword){
-        User user = userRepository.findByEmail(changePassword.getEmail());
-        if (user == null) {
-            return ("Username not existed");
-        }
-        if(!bCryptPasswordEncoder.matches(changePassword.getOldPassword(), user.getPassword())){
-            return "Invalid Old Password";
-        }
-        userRepository.changePassword(encoder.encode(changePassword.getNewPassword()), changePassword.getEmail());
-        return "Password Changed Successfully";
+    user.setRoles(roles);
+    if (matcher.find()) {
+      userRepository.save(user);
+      return ResponseEntity.ok(new MessageResponse("User registered successfully !"));
+    } else {
+      return ResponseEntity.ok(new MessageResponse("Password not match wellFormed !"));
     }
+  }
 
-    @Override
-    public String validatePasswordResetToken(String token) {
-        PasswordResetToken passwordResetToken
-                = passwordResetTokenRepository.findByToken(token);
-        if (passwordResetToken == null) {
-            return "Invalid";
-        }
-        Calendar cal = Calendar.getInstance();
-
-        if ((passwordResetToken.getExpirationTime().getTime()
-                - cal.getTime().getTime()) <= 0) {
-            passwordResetTokenRepository.delete(passwordResetToken);
-            return "Expired";
-        }
-        return "Valid";
+  @Override
+  public String changePassword(@Valid @RequestBody ChangePasswordRequest changePassword){
+    User user = userRepository.findByEmail(changePassword.getEmail());
+    if (user == null) {
+      return ("Username not existed");
     }
-
-    @Override
-    public String validatePasswordResetOtp(int otp) {
-        Otp otpCode = otpRepository.findByOtp(otp);
-        if (otpCode == null) {
-            return "Invalid";
-        }
-        Calendar cal = Calendar.getInstance();
-
-        if((otpCode.getRealTime().getTime() - cal.getTime().getTime()) <=0){
-            otpRepository.delete(otpCode);
-            return "Expired";
-        }
-        return "Valid";
+    if(!bCryptPasswordEncoder.matches(changePassword.getOldPassword(), user.getPassword())){
+      return "Invalid Old Password";
     }
+    userRepository.changePassword(encoder.encode(changePassword.getNewPassword()), changePassword.getEmail());
+    return "Password Changed Successfully";
+  }
 
-    @Override
-    public void createPasswordResetTokenForUser(User user, String rsToken) {
-        PasswordResetToken passwordResetToken
-                = new PasswordResetToken(rsToken, user);
-        passwordResetTokenRepository.save(passwordResetToken);
+  @Override
+  public String validatePasswordResetToken(String token) {
+    PasswordResetToken passwordResetToken
+            = passwordResetTokenRepository.findByToken(token);
+    if (passwordResetToken == null) {
+      return "Invalid";
     }
+    Calendar cal = Calendar.getInstance();
 
-    @Override
-    public void createPasswordResetOtp(User user, int otp) {
-        Otp otpCode = new Otp(user, otp);
-        otpRepository.save(otpCode);
+    if ((passwordResetToken.getExpirationTime().getTime()
+            - cal.getTime().getTime()) <= 0) {
+      passwordResetTokenRepository.delete(passwordResetToken);
+      return "Expired";
     }
+    return "Valid";
+  }
 
-    @Override
-    public Optional<User> getUserByPasswordResetToken(String token, User user) {
-        return Optional.ofNullable(passwordResetTokenRepository.findByToken(token).getUser());
+  @Override
+  public String validatePasswordResetOtp(int otp) {
+    Otp otpCode = otpRepository.findByOtp(otp);
+    if (otpCode == null) {
+      return "Invalid";
     }
+    Calendar cal = Calendar.getInstance();
 
-    @Override
-    public void changePassword(User user, String newPassword) {
-        user.setPassword(newPassword);
-        userRepository.save(user);
+    if((otpCode.getRealTime().getTime() - cal.getTime().getTime()) <=0){
+      otpRepository.delete(otpCode);
+      return "Expired";
     }
+    return "Valid";
+  }
 
-    @Override
-    public Optional<User> getUserByOtp(int otp, User user) {
-        return Optional.ofNullable(otpRepository.findByOtp(otp).getUser());
-    }
+  @Override
+  public void createPasswordResetTokenForUser(User user, String rsToken) {
+    PasswordResetToken passwordResetToken
+            = new PasswordResetToken(rsToken, user);
+    passwordResetTokenRepository.save(passwordResetToken);
+  }
+
+  @Override
+  public void createPasswordResetOtp(User user, int otp) {
+    Otp otpCode = new Otp(user, otp);
+    otpRepository.save(otpCode);
+  }
+
+  @Override
+  public Optional<User> getUserByPasswordResetToken(String token, User user) {
+    return Optional.ofNullable(passwordResetTokenRepository.findByToken(token).getUser());
+  }
+
+  @Override
+  public void changePassword(User user, String newPassword) {
+    user.setPassword(newPassword);
+    userRepository.save(user);
+  }
+
+  @Override
+  public Optional<User> getUserByOtp(int otp, User user) {
+    return Optional.ofNullable(otpRepository.findByOtp(otp).getUser());
+  }
 
 }
