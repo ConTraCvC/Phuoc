@@ -101,7 +101,7 @@ public class PasswordResetImpl implements PasswordReset{
         accountControl.changePassword(user.get(), encoder.encode(password.getNewPassword()));
         passwordResetTokenRepository.deleteByToken(token);
         return "Password Reset Successfully !";}
-      else { return "Password not match wellFormed !";}
+      else { return "Password does not match wellFormed !";}
     } else {
       return "Invalid Token";
     }
