@@ -5,7 +5,7 @@ import com.jwt.models.*;
 import com.jwt.payload.request.*;
 import com.jwt.payload.response.JwtResponse;
 import com.jwt.payload.response.MessageResponse;
-import com.jwt.payload.response.TokenRefreshResponse;
+import com.jwt.payload.response.RefreshTokenResponse;
 import com.jwt.payload.response.UserResponse;
 import com.jwt.repository.*;
 import com.jwt.security.jwt.JwtUtils;
@@ -22,7 +22,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.*;
@@ -83,7 +82,7 @@ public class AccountControlImpl implements AccountControl {
             .map(RefreshToken::getUser)
             .map(user -> {
               String token = jwtUtils.generateTokenFromUsername(user.getUsername());
-              return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken));
+              return ResponseEntity.ok(new RefreshTokenResponse(token, requestRefreshToken));
             })
             .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
                     "Refresh token is not exists!"));
