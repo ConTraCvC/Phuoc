@@ -160,64 +160,9 @@ public class AccountControlImpl implements AccountControl {
   }
 
   @Override
-  public String validatePasswordResetToken(String token) {
-    PasswordResetToken passwordResetToken
-            = passwordResetTokenRepository.findByToken(token);
-    if (passwordResetToken == null) {
-      return "Invalid";
-    }
-    Calendar cal = Calendar.getInstance();
-
-    if ((passwordResetToken.getExpirationTime().getTime()
-            - cal.getTime().getTime()) <= 0) {
-      passwordResetTokenRepository.delete(passwordResetToken);
-      return "Expired";
-    }
-    return "Valid";
-  }
-
-  @Override
-  public String validatePasswordResetOtp(int otp) {
-    Otp otpCode = otpRepository.findByOtp(otp);
-    if (otpCode == null) {
-      return "Invalid";
-    }
-    Calendar cal = Calendar.getInstance();
-
-    if((otpCode.getRealTime().getTime() - cal.getTime().getTime()) <=0){
-      otpRepository.delete(otpCode);
-      return "Expired";
-    }
-    return "Valid";
-  }
-
-  @Override
-  public void createPasswordResetTokenForUser(User user, String rsToken) {
-    PasswordResetToken passwordResetToken
-            = new PasswordResetToken(rsToken, user);
-    passwordResetTokenRepository.save(passwordResetToken);
-  }
-
-  @Override
   public void createPasswordResetOtp(User user, int otp) {
     Otp otpCode = new Otp(user, otp);
     otpRepository.save(otpCode);
-  }
-
-  @Override
-  public Optional<User> getUserByPasswordResetToken(String token, User user) {
-    return Optional.ofNullable(passwordResetTokenRepository.findByToken(token).getUser());
-  }
-
-  @Override
-  public void changePassword(User user, String newPassword) {
-    user.setPassword(newPassword);
-    userRepository.save(user);
-  }
-
-  @Override
-  public Optional<User> getUserByOtp(int otp, User user) {
-    return Optional.ofNullable(otpRepository.findByOtp(otp).getUser());
   }
 
 }

@@ -3,6 +3,7 @@ package com.jwt.security.services;
 import com.jwt.models.PasswordResetToken;
 import com.jwt.models.User;
 import com.jwt.payload.request.ChangePasswordRequest;
+import com.jwt.payload.request.Otp;
 import com.jwt.payload.response.ResetPasswordResponse;
 import com.jwt.repository.OtpRepository;
 import com.jwt.repository.PasswordResetTokenRepository;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import java.util.Calendar;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -44,7 +46,7 @@ public class PasswordResetImpl implements PasswordReset{
     String token;
     if (user != null) {
       token = UUID.randomUUID().toString();
-      accountControl.createPasswordResetTokenForUser(user, token);
+      createPasswordResetTokenForUser(user, token);
       passwordResetTokenMail(applicationUrl(request), token);
       passwordResetTokenRepository.deleteAll();
       applicationUrl(request);
@@ -85,20 +87,68 @@ public class PasswordResetImpl implements PasswordReset{
 //            request.getContextPath();
 //  }
 
+  public Optional<User> getUserByPasswordResetToken(String token, User user) {
+    return Optional.ofNullable(passwordResetTokenRepository.findByToken(token).getUser());
+  }
+  public Optional<User> getUserByOtp(int otp, User user) {
+    return Optional.ofNullable(otpRepository.findByOtp(otp).getUser());
+  }
+
+  public String validatePasswordResetToken(String token) {
+    PasswordResetToken passwordResetToken
+            = passwordResetTokenRepository.findByToken(token);
+    if (passwordResetToken == null) {
+      return "Invalid";
+    }
+    Calendar cal = Calendar.getInstance();
+
+    if ((passwordResetToken.getExpirationTime().getTime()
+            - cal.getTime().getTime()) <= 0) {
+      passwordResetTokenRepository.delete(passwordResetToken);
+      return "Expired";
+    }
+    return "Valid";
+  }
+
+  public String validatePasswordResetOtp(int otp) {
+    Otp otpCode = otpRepository.findByOtp(otp);
+    if (otpCode == null) {
+      return "Invalid";
+    }
+    Calendar cal = Calendar.getInstance();
+
+    if((otpCode.getRealTime().getTime() - cal.getTime().getTime()) <=0){
+      otpRepository.delete(otpCode);
+      return "Expired";
+    }
+    return "Valid";
+  }
+
+  public void createPasswordResetTokenForUser(User user, String rsToken) {
+    PasswordResetToken passwordResetToken
+            = new PasswordResetToken(rsToken, user);
+    passwordResetTokenRepository.save(passwordResetToken);
+  }
+
+  public void changePassword(User user, String newPassword) {
+    user.setPassword(newPassword);
+    userRepository.save(user);
+  }
+
   @Override
   public String savePassword(@Valid @RequestParam("token") String token,
                              @Valid @RequestBody ChangePasswordRequest password){
-    String result = accountControl.validatePasswordResetToken(token);
-    if(!result.equalsIgnoreCase("valid")){
+    String result = validatePasswordResetToken(token);
+    if(!result.equalsIgnoreCase("Valid")){
       return "Invalid Token";
     }
-    Optional<User> user = accountControl.getUserByPasswordResetToken(token, new User());
+    Optional<User> user = getUserByPasswordResetToken(token, new User());
     if(user.isPresent()){
       String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\S+$).{8,40}$";
       Pattern pattern = Pattern.compile(regex);
       Matcher matcher = pattern.matcher(password.getNewPassword());
       if (matcher.find()){
-        accountControl.changePassword(user.get(), encoder.encode(password.getNewPassword()));
+        changePassword(user.get(), encoder.encode(password.getNewPassword()));
         passwordResetTokenRepository.deleteByToken(token);
         return "Password Reset Successfully !";}
       else { return "Password does not match wellFormed !";}
@@ -110,17 +160,17 @@ public class PasswordResetImpl implements PasswordReset{
   @Override
   public String saveOtpPassword(@Valid @RequestParam("otp") int otp,
                                 @Valid @RequestBody ChangePasswordRequest password) {
-    String result = accountControl.validatePasswordResetOtp(otp);
-    if (!result.equalsIgnoreCase("valid")) {
+    String result = validatePasswordResetOtp(otp);
+    if (!result.equalsIgnoreCase("Valid")) {
       return "Invalid OTP";
     }
-    Optional<User> user = accountControl.getUserByOtp(otp, new User());
+    Optional<User> user = getUserByOtp(otp, new User());
     if(user.isPresent()){
       String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\S+$).{8,40}$";
       Pattern pattern = Pattern.compile(regex);
       Matcher matcher = pattern.matcher(password.getNewPassword());
       if(matcher.find()){
-        accountControl.changePassword(user.get(), encoder.encode(password.getNewPassword()));
+        changePassword(user.get(), encoder.encode(password.getNewPassword()));
         otpRepository.deleteBy(otp);
         return "Password Reset Successfully";}
       else { return "Password does not match wellFormed !";}

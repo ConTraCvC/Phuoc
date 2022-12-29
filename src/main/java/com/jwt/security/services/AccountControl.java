@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.util.Optional;
 
 public interface AccountControl {
   ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response);
@@ -21,16 +20,5 @@ public interface AccountControl {
 
   String changePassword(@Valid @RequestBody ChangePasswordRequest changePassword);
 
-  String validatePasswordResetToken(String token);
-  String validatePasswordResetOtp(int otp);
-
-  void createPasswordResetTokenForUser(User user, String token);
-
-  Optional<User> getUserByPasswordResetToken(String token, User user);
-
-  void changePassword(User user, String newPassword);
-
   void createPasswordResetOtp(User user, int otp);
-
-  Optional<User> getUserByOtp(int otp, User user);
 }
