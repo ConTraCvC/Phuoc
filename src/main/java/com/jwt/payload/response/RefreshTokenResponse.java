@@ -5,12 +5,12 @@ import lombok.Data;
 @Data
 public class RefreshTokenResponse {
 
-  private String accessToken;
+  private String token;
   private String refreshToken;
   private String tokenType = "Bearer";
 
-  public RefreshTokenResponse(String accessToken, String refreshToken) {
-    this.accessToken = accessToken;
+  public RefreshTokenResponse(String token, String refreshToken) {
+    this.token = token;
     this.refreshToken = refreshToken;
   }
 }
