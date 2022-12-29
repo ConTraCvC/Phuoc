@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class RefreshTokenResponse {
 
-  private String token;
+  private String toke;
   private String refreshToken;
   private String tokenType = "Bearer";
 
