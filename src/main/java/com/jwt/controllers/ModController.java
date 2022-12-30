@@ -63,7 +63,7 @@ public class ModController extends Thread {
       Thread thread1 = new Thread(String.valueOf(obj2));
       thread1.start();
     } catch (Exception e) {ResponseEntity.badRequest().body(e.getMessage()); System.out.println(e.getMessage());}
-    return ResponseEntity.ok().build();
+    return ResponseEntity.ok("Successfully");
   }
 
   @GetMapping(value = "/sendSMS")
