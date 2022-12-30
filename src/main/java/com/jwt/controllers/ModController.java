@@ -2,13 +2,13 @@ package com.jwt.controllers;
 
 import com.jwt.models.User;
 import com.jwt.payload.request.ChangePasswordRequest;
+import com.jwt.repository.RefreshTokenRepository;
 import com.jwt.repository.UserRepository;
 import com.jwt.security.services.AccountControl;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -24,11 +24,12 @@ import java.util.Random;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/auth")
-public class ModController {
+public class ModController extends Thread {
 
   private final Logger log = LoggerFactory.getLogger(AuthController.class);
   private final UserRepository userRepository;
   private final AccountControl accountControl;
+  private final RefreshTokenRepository refreshTokenRepository;
 
   @GetMapping("/mod")
   @PreAuthorize("hasRole('MODERATOR') || hasRole('ADMIN')")
@@ -53,10 +54,15 @@ public class ModController {
 
   @DeleteMapping("/admin/{id}")
   @PreAuthorize("hasRole('ADMIN')")
-  ResponseEntity<?> deleteUser(@PathVariable Long id) {
-    log.info("Request to delete group: {}", id);
+  ResponseEntity<?> deleteUser(@PathVariable Long id, User user ) {
     try {
-    userRepository.deleteById(id);} catch (Exception e) {return ResponseEntity.badRequest().body("Cannot delete or update a parent row: a foreign key constraint exist !");}
+      Object obj = refreshTokenRepository.deleteByTokenId(user);
+      Thread thread = new Thread(String.valueOf(obj));
+      thread.start();
+      Object obj2 = userRepository.deleteByUserId(id);
+      Thread thread1 = new Thread(String.valueOf(obj2));
+      thread1.start();
+    } catch (Exception e) {ResponseEntity.badRequest().body(e.getMessage()); System.out.println(e.getMessage());}
     return ResponseEntity.ok().build();
   }
 
