@@ -46,34 +46,37 @@ public class AccountControlImpl implements AccountControl {
   @Override
   public ResponseEntity<?> authenticateUser (@Valid @RequestBody LoginRequest loginRequest,
                                              HttpServletResponse response) {
+    try {
+      Authentication authentication = authenticationManager.authenticate(
+              new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
-    Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-
-    SecurityContextHolder.getContext().setAuthentication(authentication);
-    String jwt = jwtUtils.generateJwtToken(authentication);
-    UserResponse userResponse = (UserResponse) authentication.getPrincipal();
-    RefreshToken refreshToken = refreshTokenService.createRefreshToken(userResponse.getId());
+      SecurityContextHolder.getContext().setAuthentication(authentication);
+      String jwt = jwtUtils.generateJwtToken(authentication);
+      UserResponse userResponse = (UserResponse) authentication.getPrincipal();
+      RefreshToken refreshToken = refreshTokenService.createRefreshToken(userResponse.getId());
 //        Optional<RefreshToken> refreshTokenRemove = refreshTokenRepository.findByToken(String.valueOf(token));
-    refreshTokenRepository.deleteAll();
+      refreshTokenRepository.deleteAll();
 //        Cookie cookie = new Cookie("token", jwt);
 //        cookie.setHttpOnly(true);
 //        cookie.setSecure(true);
 //        response.addCookie(cookie);
-    List<String> roles = userResponse.getAuthorities().stream()
-            .map(GrantedAuthority::getAuthority)
-            .collect(Collectors.toList());
+      List<String> roles = userResponse.getAuthorities().stream()
+              .map(GrantedAuthority::getAuthority)
+              .collect(Collectors.toList());
 
-    return ResponseEntity.ok(new JwtResponse(jwt,
-            refreshToken.getToken(),
-            userResponse.getId(),
-            userResponse.getUsername(),
-            userResponse.getEmail(),
-            roles));
+      return ResponseEntity.ok(new JwtResponse(jwt,
+              refreshToken.getToken(),
+              userResponse.getId(),
+              userResponse.getUsername(),
+              userResponse.getEmail(),
+              roles));
+    } catch (Exception e) {System.out.println(e.getLocalizedMessage());}
+    return ResponseEntity.badRequest().body("Wrong username or password !");
   }
 
   @Override
   public ResponseEntity<?> refreshtoken(@Valid @RequestBody RefreshTokenRequest request) {
+    try{
     String requestRefreshToken = request.getRefreshToken();
 
     return refreshTokenService.findByToken(requestRefreshToken)
@@ -84,7 +87,8 @@ public class AccountControlImpl implements AccountControl {
               return ResponseEntity.ok(new RefreshTokenResponse(token, requestRefreshToken));
             })
             .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
-                    "Refresh token is not exists!"));
+                    "Refresh token is not exists!")); } catch (Exception e) {System.out.println(e.getMessage());}
+    return ResponseEntity.badRequest().body("Refresh token is not exists!");
   }
 
   @Override
@@ -139,9 +143,9 @@ public class AccountControlImpl implements AccountControl {
     user.setRoles(roles);
     if (matcher.find()) {
       userRepository.save(user);
-      return ResponseEntity.ok(new MessageResponse("User registered successfully !"));
+      return ResponseEntity.ok("User registered successfully !");
     } else {
-      return ResponseEntity.ok(new MessageResponse("Password does not match wellFormed !"));
+      return ResponseEntity.badRequest().body("Password does not match wellFormed !");
     }
   }
 

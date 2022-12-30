@@ -8,6 +8,7 @@ import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -54,7 +55,8 @@ public class ModController {
   @PreAuthorize("hasRole('ADMIN')")
   ResponseEntity<?> deleteUser(@PathVariable Long id) {
     log.info("Request to delete group: {}", id);
-    userRepository.deleteById(id);
+    try {
+    userRepository.deleteById(id);} catch (Exception e) {return ResponseEntity.badRequest().body("Cannot delete or update a parent row: a foreign key constraint exist !");}
     return ResponseEntity.ok().build();
   }
 

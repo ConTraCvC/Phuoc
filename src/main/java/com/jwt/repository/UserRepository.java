@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import com.jwt.models.User;
 import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
@@ -24,8 +25,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
   User findByEmail(String email);
 
-  @Transactional
+
   @Modifying(clearAutomatically = true)
   @Query("update User c set c.password = :password where c.email = :email")
   void changePassword(@Param("password") String password, @Param("email") String email);
+
+  @Modifying(clearAutomatically = true)
+  @Query("delete User c where c.id = :id")
+  void deleteById(@Param("id") @NotNull Long id );
 }

@@ -61,7 +61,7 @@ public class PasswordResetImpl implements PasswordReset{
 //            }
       return ResponseEntity.ok(new ResetPasswordResponse(token));
     }
-    return ResponseEntity.ok("Wrong email address");
+    return ResponseEntity.badRequest().body("Wrong email address !");
   }
 
   private String passwordResetTokenMail(String applicationUrl, String token) {
