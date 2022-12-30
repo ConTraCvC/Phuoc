@@ -35,7 +35,6 @@ public class PasswordResetImpl implements PasswordReset{
 
   private final PasswordResetTokenRepository passwordResetTokenRepository;
   private final UserRepository userRepository;
-  private final AccountControl accountControl;
   private final PasswordEncoder encoder;
   private final OtpRepository otpRepository;
   private final JavaMailSender mailSender;

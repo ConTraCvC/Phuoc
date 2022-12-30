@@ -39,7 +39,6 @@ public class AccountControlImpl implements AccountControl {
   private final AuthenticationManager authenticationManager;
   private final PasswordEncoder encoder;
   private final BCryptPasswordEncoder bCryptPasswordEncoder;
-  private final PasswordResetTokenRepository passwordResetTokenRepository;
   private final OtpRepository otpRepository;
   private final RefreshTokenService refreshTokenService;
   private final RefreshTokenRepository refreshTokenRepository;
