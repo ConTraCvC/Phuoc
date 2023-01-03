@@ -90,6 +90,23 @@ public class PasswordResetImpl implements PasswordReset{
 //            request.getContextPath();
 //  }
 
+  @Override
+  public ResponseEntity<?> resetPasswordOTP(ChangePasswordRequest password) {
+    Twilio.init("AC428df5bd302a88e1e314d9ece0159181", "c21bca3a1adf47ee0e4d2f94a44e7558");
+    User user = userRepository.findByEmail(password.getEmail());
+    Random r = new Random();
+    int otpCode = 100000 + r.nextInt(888888);
+    createPasswordResetOtp(user, otpCode);
+    Message.creator(new PhoneNumber("+84866682422"),
+            new PhoneNumber("+19497495157"),
+            "Limited reset OTP code for 10 minutes: " + otpCode).create();
+    return ResponseEntity.ok("OTP Send Successfully");
+  }
+  private void createPasswordResetOtp(User user, int otp) {
+    Otp otpCode = new Otp(user, otp);
+    otpRepository.save(otpCode);
+  }
+
   public Optional<User> getUserByPasswordResetToken(String token, User user) {
     return Optional.ofNullable(passwordResetTokenRepository.findByToken(token).getUser());
   }
@@ -136,23 +153,6 @@ public class PasswordResetImpl implements PasswordReset{
   public void changePassword(User user, String newPassword) {
     user.setPassword(newPassword);
     userRepository.save(user);
-  }
-
-  @Override
-  public ResponseEntity<?> resetPasswordOTP(ChangePasswordRequest password) {
-    Twilio.init("AC428df5bd302a88e1e314d9ece0159181", "c21bca3a1adf47ee0e4d2f94a44e7558");
-    User user = userRepository.findByEmail(password.getEmail());
-    Random r = new Random();
-    int otpCode = 100000 + r.nextInt(888888);
-    createPasswordResetOtp(user, otpCode);
-    Message.creator(new PhoneNumber("+84866682422"),
-            new PhoneNumber("+19497495157"),
-            "Limited reset OTP code for 10 minutes: " + otpCode).create();
-    return ResponseEntity.ok("OTP Send Successfully");
-  }
-  private void createPasswordResetOtp(User user, int otp) {
-    Otp otpCode = new Otp(user, otp);
-    otpRepository.save(otpCode);
   }
 
   @Override
