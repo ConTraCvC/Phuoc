@@ -191,7 +191,7 @@ public class PasswordResetImpl implements PasswordReset{
     createPasswordResetOtp(user, otpCode);
     Message.creator(new PhoneNumber("+84866682422"),
             new PhoneNumber("+19497495157"),
-            "Limited reset OTP code for a 10 minutes: " + otpCode).create();
+            "Limited reset OTP code for 10 minutes: " + otpCode).create();
     return ResponseEntity.ok("OTP Send Successfully");
   }
   private void createPasswordResetOtp(User user, int otp) {
