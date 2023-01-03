@@ -139,6 +139,23 @@ public class PasswordResetImpl implements PasswordReset{
   }
 
   @Override
+  public ResponseEntity<?> resetPasswordOTP(ChangePasswordRequest password) {
+    Twilio.init("AC428df5bd302a88e1e314d9ece0159181", "c21bca3a1adf47ee0e4d2f94a44e7558");
+    User user = userRepository.findByEmail(password.getEmail());
+    Random r = new Random();
+    int otpCode = 100000 + r.nextInt(888888);
+    createPasswordResetOtp(user, otpCode);
+    Message.creator(new PhoneNumber("+84866682422"),
+            new PhoneNumber("+19497495157"),
+            "Limited reset OTP code for 10 minutes: " + otpCode).create();
+    return ResponseEntity.ok("OTP Send Successfully");
+  }
+  private void createPasswordResetOtp(User user, int otp) {
+    Otp otpCode = new Otp(user, otp);
+    otpRepository.save(otpCode);
+  }
+
+  @Override
   public String savePassword(@Valid @RequestParam("token") String token,
                              @Valid @RequestBody ChangePasswordRequest password){
     String result = validatePasswordResetToken(token);
@@ -180,23 +197,6 @@ public class PasswordResetImpl implements PasswordReset{
     } else {
       return "Invalid OTP";
     }
-  }
-
-  @Override
-  public ResponseEntity<?> resetPasswordOTP(ChangePasswordRequest password) {
-    Twilio.init("AC428df5bd302a88e1e314d9ece0159181", "c21bca3a1adf47ee0e4d2f94a44e7558");
-    User user = userRepository.findByEmail(password.getEmail());
-    Random r = new Random();
-    int otpCode = 100000 + r.nextInt(888888);
-    createPasswordResetOtp(user, otpCode);
-    Message.creator(new PhoneNumber("+84866682422"),
-            new PhoneNumber("+19497495157"),
-            "Limited reset OTP code for 10 minutes: " + otpCode).create();
-    return ResponseEntity.ok("OTP Send Successfully");
-  }
-  private void createPasswordResetOtp(User user, int otp) {
-    Otp otpCode = new Otp(user, otp);
-    otpRepository.save(otpCode);
   }
 
 }
