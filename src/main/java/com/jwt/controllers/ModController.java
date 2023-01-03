@@ -21,8 +21,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/auth")
 public class ModController extends Thread {
-
-  private final Logger log = LoggerFactory.getLogger(AuthController.class);
   private final UserRepository userRepository;
   private final PasswordResetImpl passwordReset;
   private final RefreshTokenRepository refreshTokenRepository;
