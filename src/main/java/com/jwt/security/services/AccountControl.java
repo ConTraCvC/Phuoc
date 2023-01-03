@@ -1,6 +1,5 @@
 package com.jwt.security.services;
 
-import com.jwt.models.User;
 import com.jwt.payload.request.ChangePasswordRequest;
 import com.jwt.payload.request.LoginRequest;
 import com.jwt.payload.request.RefreshTokenRequest;
@@ -20,5 +19,4 @@ public interface AccountControl {
 
   String changePassword(@Valid @RequestBody ChangePasswordRequest changePassword);
 
-  void createPasswordResetOtp(User user, int otp);
 }

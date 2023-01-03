@@ -162,10 +162,4 @@ public class AccountControlImpl implements AccountControl {
     return "Password Changed Successfully";
   }
 
-  @Override
-  public void createPasswordResetOtp(User user, int otp) {
-    Otp otpCode = new Otp(user, otp);
-    otpRepository.save(otpCode);
-  }
-
 }
