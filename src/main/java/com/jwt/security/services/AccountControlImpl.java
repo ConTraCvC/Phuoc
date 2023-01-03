@@ -22,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.*;
@@ -39,7 +40,6 @@ public class AccountControlImpl implements AccountControl {
   private final AuthenticationManager authenticationManager;
   private final PasswordEncoder encoder;
   private final BCryptPasswordEncoder bCryptPasswordEncoder;
-  private final OtpRepository otpRepository;
   private final RefreshTokenService refreshTokenService;
   private final RefreshTokenRepository refreshTokenRepository;
 
@@ -54,12 +54,11 @@ public class AccountControlImpl implements AccountControl {
       String jwt = jwtUtils.generateJwtToken(authentication);
       UserResponse userResponse = (UserResponse) authentication.getPrincipal();
       RefreshToken refreshToken = refreshTokenService.createRefreshToken(userResponse.getId());
-//        Optional<RefreshToken> refreshTokenRemove = refreshTokenRepository.findByToken(String.valueOf(token));
       refreshTokenRepository.deleteAll();
-//        Cookie cookie = new Cookie("token", jwt);
-//        cookie.setHttpOnly(true);
-//        cookie.setSecure(true);
-//        response.addCookie(cookie);
+//      Cookie cookie = new Cookie("token", jwt);
+//      cookie.setHttpOnly(true);
+//      cookie.setSecure(true);
+//      response.addCookie(cookie);
       List<String> roles = userResponse.getAuthorities().stream()
               .map(GrantedAuthority::getAuthority)
               .collect(Collectors.toList());
