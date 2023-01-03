@@ -72,7 +72,7 @@ public class ModController extends Thread {
     Twilio.init("AC428df5bd302a88e1e314d9ece0159181", "39a084170d74b89e3d96382d2311d784");
     User user = userRepository.findByEmail(password.getEmail());
     Random r = new Random();
-    int otpCode = 100000 + r.nextInt(800000);
+    int otpCode = 100000 + r.nextInt(888888);
     accountControl.createPasswordResetOtp(user, otpCode);
     Message.creator(new PhoneNumber("+84866682422"),
             new PhoneNumber("+19497495157"),
