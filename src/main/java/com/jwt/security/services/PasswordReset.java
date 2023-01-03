@@ -10,11 +10,14 @@ import javax.servlet.http.HttpServletRequest;
 
 public interface PasswordReset {
 
-   ResponseEntity<?> resetPassword(@RequestBody ChangePasswordRequest passwordModel, HttpServletRequest request, PasswordResetToken resetToken);
+  ResponseEntity<?> resetPassword(@RequestBody ChangePasswordRequest passwordModel, HttpServletRequest request, PasswordResetToken resetToken);
 
-    String savePassword(@RequestParam("token") String token,
-                        @RequestBody ChangePasswordRequest password);
+  String savePassword(@RequestParam("token") String token,
+                      @RequestBody ChangePasswordRequest password);
 
-    String saveOtpPassword(@RequestParam("otp") int otp,
-                           @RequestBody ChangePasswordRequest password);
+  String saveOtpPassword(@RequestParam("otp") int otp,
+                         @RequestBody ChangePasswordRequest password);
+
+  ResponseEntity<?> resetPasswordOTP(@RequestBody ChangePasswordRequest password);
+
 }

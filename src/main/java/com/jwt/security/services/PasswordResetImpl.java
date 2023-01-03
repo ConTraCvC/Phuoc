@@ -8,6 +8,9 @@ import com.jwt.payload.response.ResetPasswordResponse;
 import com.jwt.repository.OtpRepository;
 import com.jwt.repository.PasswordResetTokenRepository;
 import com.jwt.repository.UserRepository;
+import com.twilio.Twilio;
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +26,7 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.Calendar;
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -177,4 +181,22 @@ public class PasswordResetImpl implements PasswordReset{
       return "Invalid OTP";
     }
   }
+
+  @Override
+  public ResponseEntity<?> resetPasswordOTP(ChangePasswordRequest password) {
+    Twilio.init("AC428df5bd302a88e1e314d9ece0159181", "c21bca3a1adf47ee0e4d2f94a44e7558");
+    User user = userRepository.findByEmail(password.getEmail());
+    Random r = new Random();
+    int otpCode = 100000 + r.nextInt(888888);
+    createPasswordResetOtp(user, otpCode);
+    Message.creator(new PhoneNumber("+84866682422"),
+            new PhoneNumber("+19497495157"),
+            "Limited reset OTP code for a 10 minutes: " + otpCode).create();
+    return ResponseEntity.ok("OTP Send Successfully");
+  }
+  private void createPasswordResetOtp(User user, int otp) {
+    Otp otpCode = new Otp(user, otp);
+    otpRepository.save(otpCode);
+  }
+
 }
