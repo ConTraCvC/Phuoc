@@ -43,6 +43,55 @@ public class PasswordResetImpl implements PasswordReset{
   private final OtpRepository otpRepository;
   private final JavaMailSender mailSender;
 
+  public Optional<User> getUserByPasswordResetToken(String token, User user) {
+    return Optional.ofNullable(passwordResetTokenRepository.findByToken(token).getUser());
+  }
+  public Optional<User> getUserByOtp(int otp, User user) {
+    return Optional.ofNullable(otpRepository.findByOtp(otp).getUser());
+  }
+
+  public String validatePasswordResetToken(String token) {
+    PasswordResetToken passwordResetToken
+            = passwordResetTokenRepository.findByToken(token);
+    if (passwordResetToken == null) {
+      return "Invalid";
+    }
+    Calendar cal = Calendar.getInstance();
+
+    if ((passwordResetToken.getExpirationTime().getTime()
+            - cal.getTime().getTime()) <= 0) {
+      passwordResetTokenRepository.delete(passwordResetToken);
+      return "Expired";
+    }
+    return "Valid";
+  }
+
+  public String validatePasswordResetOtp(int otp) {
+    Otp otpCode = otpRepository.findByOtp(otp);
+    if (otpCode == null) {
+      return "Invalid";
+    }
+    Calendar cal = Calendar.getInstance();
+
+    if((otpCode.getRealTime().getTime() - cal.getTime().getTime()) <=0){
+      otpRepository.delete(otpCode);
+      return "Expired";
+    }
+    return "Valid";
+  }
+
+  public void changePassword(User user, String newPassword) {
+    user.setPassword(newPassword);
+    userRepository.save(user);
+  }
+
+
+  public void createPasswordResetTokenForUser(User user, String rsToken) {
+    PasswordResetToken passwordResetToken
+            = new PasswordResetToken(rsToken, user);
+    passwordResetTokenRepository.save(passwordResetToken);
+  }
+
   @Override
   public ResponseEntity<?> resetPassword(@RequestBody ChangePasswordRequest password, HttpServletRequest request, PasswordResetToken resetToken) {
     User user = userRepository.findByEmail(password.getEmail());
@@ -105,54 +154,6 @@ public class PasswordResetImpl implements PasswordReset{
   private void createPasswordResetOtp(User user, int otp) {
     Otp otpCode = new Otp(user, otp);
     otpRepository.save(otpCode);
-  }
-
-  public Optional<User> getUserByPasswordResetToken(String token, User user) {
-    return Optional.ofNullable(passwordResetTokenRepository.findByToken(token).getUser());
-  }
-  public Optional<User> getUserByOtp(int otp, User user) {
-    return Optional.ofNullable(otpRepository.findByOtp(otp).getUser());
-  }
-
-  public String validatePasswordResetToken(String token) {
-    PasswordResetToken passwordResetToken
-            = passwordResetTokenRepository.findByToken(token);
-    if (passwordResetToken == null) {
-      return "Invalid";
-    }
-    Calendar cal = Calendar.getInstance();
-
-    if ((passwordResetToken.getExpirationTime().getTime()
-            - cal.getTime().getTime()) <= 0) {
-      passwordResetTokenRepository.delete(passwordResetToken);
-      return "Expired";
-    }
-    return "Valid";
-  }
-
-  public String validatePasswordResetOtp(int otp) {
-    Otp otpCode = otpRepository.findByOtp(otp);
-    if (otpCode == null) {
-      return "Invalid";
-    }
-    Calendar cal = Calendar.getInstance();
-
-    if((otpCode.getRealTime().getTime() - cal.getTime().getTime()) <=0){
-      otpRepository.delete(otpCode);
-      return "Expired";
-    }
-    return "Valid";
-  }
-
-  public void createPasswordResetTokenForUser(User user, String rsToken) {
-    PasswordResetToken passwordResetToken
-            = new PasswordResetToken(rsToken, user);
-    passwordResetTokenRepository.save(passwordResetToken);
-  }
-
-  public void changePassword(User user, String newPassword) {
-    user.setPassword(newPassword);
-    userRepository.save(user);
   }
 
   @Override
