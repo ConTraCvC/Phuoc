@@ -29,13 +29,6 @@ public class ModController extends Thread {
     return userRepository.findAll();
   }
 
-//  @GetMapping("/user")
-//  ResponseEntity<User> getUser(String username) {
-//    Optional<User> user = userRepository.findByUsername(username);
-//    return user.map(response -> ResponseEntity.ok().body(response))
-//            .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-//  }
-
   @GetMapping("/user/{id}")
   @PreAuthorize("hasRole('USER') || hasRole('MODERATOR') || hasRole('ADMIN')")
   ResponseEntity<?> getUser(@PathVariable Long id) {
