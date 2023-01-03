@@ -57,8 +57,8 @@ public class ModController extends Thread {
   ResponseEntity<?> deleteUser(@PathVariable Long id, User user ) {
     try {
       Object obj = refreshTokenRepository.deleteByTokenId(user);
-      Thread thread = new Thread(String.valueOf(obj));
-      thread.start();
+      Thread thread0 = new Thread(String.valueOf(obj));
+      thread0.start();
       Object obj2 = userRepository.deleteByUserId(id);
       Thread thread1 = new Thread(String.valueOf(obj2));
       thread1.start();
