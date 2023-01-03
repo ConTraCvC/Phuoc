@@ -2,8 +2,6 @@ package com.jwt.controllers;
 
 import com.jwt.models.User;
 import com.jwt.payload.request.ChangePasswordRequest;
-import com.jwt.repository.OtpRepository;
-import com.jwt.repository.PasswordResetTokenRepository;
 import com.jwt.repository.RefreshTokenRepository;
 import com.jwt.repository.UserRepository;
 import com.jwt.security.services.PasswordResetImpl;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*", maxAge = 3600)
