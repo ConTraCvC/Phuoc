@@ -53,7 +53,7 @@ public class PasswordResetImpl implements PasswordReset{
   private final String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\S+$).{8,40}$";
   private final Pattern pattern = Pattern.compile(regex);
 
-  public String validatePasswordResetToken(String token) {
+  private String validatePasswordResetToken(String token) {
     PasswordResetToken passwordResetToken
             = passwordResetTokenRepository.findByToken(token);
     if (passwordResetToken == null) {
@@ -69,7 +69,7 @@ public class PasswordResetImpl implements PasswordReset{
     return "Valid";
   }
 
-  public String validatePasswordResetOtp(int otp) {
+  private String validatePasswordResetOtp(int otp) {
     Otp otpCode = otpRepository.findByOtp(otp);
     if (otpCode == null) {
       return "Invalid";
@@ -83,13 +83,13 @@ public class PasswordResetImpl implements PasswordReset{
     return "Valid";
   }
 
-  public void changePassword(User user, String newPassword) {
+  private void changePassword(User user, String newPassword) {
     user.setPassword(newPassword);
     userRepository.save(user);
   }
 
 
-  public void createPasswordResetTokenForUser(User user, String rsToken) {
+  private void createPasswordResetTokenForUser(User user, String rsToken) {
     PasswordResetToken passwordResetToken
             = new PasswordResetToken(rsToken, user);
     passwordResetTokenRepository.save(passwordResetToken);
