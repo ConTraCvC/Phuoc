@@ -86,7 +86,8 @@ public class AccountControlImpl implements AccountControl {
               return ResponseEntity.ok(new RefreshTokenResponse(token, requestRefreshToken));
             })
             .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
-                    "Refresh token is not exists!")); } catch (Exception e) {System.out.println(e.getMessage());}
+                    "Refresh token is not exists!"));
+    } catch (Exception e) {System.out.println(e.getMessage());}
     return ResponseEntity.badRequest().body("Refresh token is not exists!");
   }
 
