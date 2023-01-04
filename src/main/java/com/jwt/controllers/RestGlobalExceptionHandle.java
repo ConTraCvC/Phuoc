@@ -67,8 +67,7 @@ public class RestGlobalExceptionHandle extends ResponseEntityExceptionHandler {
 
   @ExceptionHandler({AccessDeniedException.class})
   public ResponseEntity<ErrorMessage> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) throws UnknownHostException {
-    Inet4Address address = (Inet4Address) Inet4Address.getLocalHost();
-    String ip4address = address.getHostAddress();
+    String ip4address = String.valueOf(Inet4Address.getLocalHost());
     log.error("Có xâm phạm nghi ngờ ip: {} , URL : {} , EX : {}" , ip4address , request.getRequestURI() , ex.getMessage());
     ex.printStackTrace();
     ErrorMessage errorMsg = new ErrorMessage()
