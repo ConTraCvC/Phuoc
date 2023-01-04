@@ -25,39 +25,39 @@ public class AuthController {
   private final PasswordReset passwordReset;
 
   @PostMapping("/sign-in")
-  public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+  ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
     return ResponseEntity.ok(accountControl.authenticateUser(loginRequest, response));
   }
 
   @PostMapping("/sign-up")
-  public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+  ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
     return ResponseEntity.ok(accountControl.registerUser(signUpRequest));
   }
 
   @PostMapping("/changePassword")
-  public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest changePassword) {
+  ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest changePassword) {
     return ResponseEntity.ok(accountControl.changePassword(changePassword));
   }
 
   @PostMapping("/resetPassword")
-  public ResponseEntity<?> resetPassword(@RequestBody ChangePasswordRequest resetPassword,
+  ResponseEntity<?> resetPassword(@RequestBody ChangePasswordRequest resetPassword,
                                                          HttpServletRequest request, PasswordResetToken resetToken) {
     return ResponseEntity.ok(passwordReset.resetPassword(resetPassword, request, resetToken));
   }
 
   @PostMapping("/savePassword")
-  public ResponseEntity<String> savePassword(@RequestParam("token") String token,
+  ResponseEntity<String> savePassword(@RequestParam("token") String token,
                                              @RequestBody ChangePasswordRequest savePassword) {
     return ResponseEntity.ok(passwordReset.savePassword(token, savePassword));
   }
 
   @PostMapping("/refreshToken")
-  public ResponseEntity<?> refreshtoken(@Valid @RequestBody RefreshTokenRequest request) {
+  ResponseEntity<?> refreshtoken(@Valid @RequestBody RefreshTokenRequest request) {
     return ResponseEntity.ok(accountControl.refreshtoken(request));
   }
 
   @PostMapping("/otp")
-  public ResponseEntity<?> saveOtpPassword(@RequestParam("otp") int otp,
+  ResponseEntity<?> saveOtpPassword(@RequestParam("otp") int otp,
                                            @RequestBody ChangePasswordRequest savePassword) {
     return ResponseEntity.ok(passwordReset.saveOtpPassword(otp, savePassword));
   }

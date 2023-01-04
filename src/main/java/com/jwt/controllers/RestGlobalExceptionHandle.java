@@ -52,7 +52,6 @@ public class RestGlobalExceptionHandle extends ResponseEntityExceptionHandler {
   @ExceptionHandler({NoSuchElementException.class})
   public ResponseEntity<ErrorMessage> handleNoSuchElementException(NoSuchElementException ex, HttpServletRequest request) {
 
-
     ErrorMessage errorMsg = new ErrorMessage()
             .setTimestamp(LocalDateTime.now().toString())
             .setStatus(HttpStatus.BAD_REQUEST.toString())

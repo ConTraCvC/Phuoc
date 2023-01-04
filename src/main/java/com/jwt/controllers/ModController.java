@@ -52,7 +52,7 @@ public class ModController extends Thread {
   }
 
   @GetMapping(value = "/sendSMS")
-  public ResponseEntity<?> resetPasswordOTP(@RequestBody ChangePasswordRequest password) {
+  ResponseEntity<?> resetPasswordOTP(@RequestBody ChangePasswordRequest password) {
     return ResponseEntity.ok(passwordReset.resetPasswordOTP(password));
   }
 
