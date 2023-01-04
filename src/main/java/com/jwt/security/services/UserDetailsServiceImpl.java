@@ -25,5 +25,3 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     return UserResponse.build(user);
   }
 }
-
-
