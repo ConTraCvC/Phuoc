@@ -50,8 +50,8 @@ public class PasswordResetImpl implements PasswordReset{
     return Optional.ofNullable(otpRepository.findByOtp(otp).getUser());
   }
   // Regex pattern to match
-  String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\S+$).{8,40}$";
-  Pattern pattern = Pattern.compile(regex);
+  private final String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\S+$).{8,40}$";
+  private final Pattern pattern = Pattern.compile(regex);
 
   public String validatePasswordResetToken(String token) {
     PasswordResetToken passwordResetToken
