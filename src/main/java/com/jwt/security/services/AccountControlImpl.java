@@ -78,7 +78,7 @@ public class AccountControlImpl implements AccountControl {
     try{
     String requestRefreshToken = request.getRefreshToken();
 
-    return refreshTokenService.findByToken(requestRefreshToken)
+    return refreshTokenRepository.findByToken(requestRefreshToken)
             .map(refreshTokenService::verifyExpiration)
             .map(RefreshToken::getUser)
             .map(user -> {

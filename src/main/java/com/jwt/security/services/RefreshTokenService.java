@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -20,10 +19,6 @@ public class RefreshTokenService {
   private Long refreshTokenDurationMs;
   private final RefreshTokenRepository refreshTokenRepository;
   private final UserRepository userRepository;
-
-  public Optional<RefreshToken> findByToken(String token) {
-    return refreshTokenRepository.findByToken(token);
-  }
 
   public RefreshToken createRefreshToken(Long userId) {
     RefreshToken refreshToken = new RefreshToken();

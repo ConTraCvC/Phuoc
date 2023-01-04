@@ -2,7 +2,6 @@ package com.jwt.repository;
 
 import com.jwt.models.RefreshToken;
 import com.jwt.models.User;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
