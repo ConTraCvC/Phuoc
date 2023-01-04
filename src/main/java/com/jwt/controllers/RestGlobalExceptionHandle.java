@@ -20,6 +20,10 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.Inet4Address;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -62,15 +66,17 @@ public class RestGlobalExceptionHandle extends ResponseEntityExceptionHandler {
   }
 
   @ExceptionHandler({AccessDeniedException.class})
-  public ResponseEntity<ErrorMessage> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
-    log.error("Có xâm phạm nghi ngờ ip: {} , URL : {} , EX : {}" , request.getRemoteHost() , request.getRequestURI() , ex.getMessage());
+  public ResponseEntity<ErrorMessage> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) throws UnknownHostException {
+    Inet4Address address = (Inet4Address) Inet4Address.getLocalHost();
+    String ip4address = address.getHostAddress();
+    log.error("Có xâm phạm nghi ngờ ip: {} , URL : {} , EX : {}" , ip4address , request.getRequestURI() , ex.getMessage());
     ex.printStackTrace();
     ErrorMessage errorMsg = new ErrorMessage()
             .setTimestamp(LocalDateTime.now().toString())
             .setStatus(HttpStatus.FORBIDDEN.toString())
             .setPath(request.getRequestURI())
             .setErrors(Collections.singletonList(ex.getMessage()))
-            .setEdesc(ex.toString());
+            .setEdesc(ex + ":" + " " + ip4address);
     return ResponseEntity
             .status(HttpStatus.FORBIDDEN)
             .contentType(MediaType.APPLICATION_JSON)
