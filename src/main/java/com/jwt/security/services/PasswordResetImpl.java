@@ -49,6 +49,7 @@ public class PasswordResetImpl implements PasswordReset{
   public Optional<User> getUserByOtp(int otp, User user) {
     return Optional.ofNullable(otpRepository.findByOtp(otp).getUser());
   }
+  // Regex pattern to match
   String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\S+$).{8,40}$";
   Pattern pattern = Pattern.compile(regex);
 
