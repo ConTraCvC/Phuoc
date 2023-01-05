@@ -131,8 +131,6 @@ public class RestGlobalExceptionHandle extends ResponseEntityExceptionHandler {
             .setPath(((ServletWebRequest) request).getRequest().getRequestURI())
             .setErrors(errors);
 
-
     return new ResponseEntity<>(errorMsg, headers, status);
-
   }
 }
