@@ -58,7 +58,7 @@ public class AuthController {
 
   @PostMapping("/otp")
   ResponseEntity<?> saveOtpPassword(@RequestParam("otp") int otp,
-                                           @RequestBody ChangePasswordRequest savePassword) {
+                                    @RequestBody ChangePasswordRequest savePassword) {
     return ResponseEntity.ok(passwordReset.saveOtpPassword(otp, savePassword));
   }
 
