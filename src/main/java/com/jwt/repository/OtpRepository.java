@@ -1,6 +1,6 @@
 package com.jwt.repository;
 
-import com.jwt.payload.request.Otp;
+import com.jwt.models.Otp;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

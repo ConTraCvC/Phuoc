@@ -1,6 +1,5 @@
-package com.jwt.payload.request;
+package com.jwt.models;
 
-import com.jwt.models.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
