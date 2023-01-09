@@ -143,7 +143,7 @@ public class PasswordResetImpl implements PasswordReset{
 
   @Override
   public ResponseEntity<?> resetPasswordOTP(ChangePasswordRequest password) {
-    Twilio.init("AC428df5bd302a88e1e314d9ece0159181", "c21bca3a1adf47ee0e4d2f94a44e7558");
+    Twilio.init("AC428df5bd302a88e1e314d9ece0159181", "7fc4e2131a7bf04ea775faaf5ea8dee7");
     User user = userRepository.findByEmail(password.getEmail());
     Random r = new Random();
     int otpCode = 100000 + r.nextInt(888888);

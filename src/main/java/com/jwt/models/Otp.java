@@ -17,7 +17,9 @@ public class Otp {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+  @Column(nullable = false, unique = true)
   private int otp;
+  @Column(nullable = false)
   private Date realTime;
 
   @OneToOne(fetch = FetchType.EAGER)
