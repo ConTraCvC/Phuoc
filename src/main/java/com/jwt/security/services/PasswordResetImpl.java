@@ -50,7 +50,6 @@ public class PasswordResetImpl implements PasswordReset{
   }
   // Regex pattern to match
   private final String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\S+$).{8,40}$";
-  private final Pattern pattern = Pattern.compile(regex);
 
   private String validatePasswordResetToken(String token) {
     PasswordResetToken passwordResetToken
@@ -167,7 +166,7 @@ public class PasswordResetImpl implements PasswordReset{
     }
     Optional<User> user = getUserByPasswordResetToken(token, new User());
     if(user.isPresent()){
-      Matcher matcher = pattern.matcher(password.getNewPassword());
+      Matcher matcher = Pattern.compile(regex).matcher(password.getNewPassword());
       if (matcher.find()){
         changePassword(user.get(), encoder.encode(password.getNewPassword()));
         passwordResetTokenRepository.deleteByToken(token);
@@ -187,7 +186,7 @@ public class PasswordResetImpl implements PasswordReset{
     }
     Optional<User> user = getUserByOtp(otp, new User());
     if(user.isPresent()){
-      Matcher matcher = pattern.matcher(password.getNewPassword());
+      Matcher matcher = Pattern.compile(regex).matcher(password.getNewPassword());
       if(matcher.find()){
         changePassword(user.get(), encoder.encode(password.getNewPassword()));
         otpRepository.deleteBy(otp);
