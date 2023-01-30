@@ -42,10 +42,10 @@ public class ModController extends Thread {
   @PreAuthorize("hasRole('ADMIN')")
   ResponseEntity<?> deleteUser(@PathVariable Long id, User user ) {
     try {
-      AtomicReference<Object> thread0 = new AtomicReference<>(refreshTokenRepository.deleteByTokenId(user));
-      thread0.get();
-      AtomicReference<Object> thread1 = new AtomicReference<>(userRepository.deleteByUserId(id));
-      thread1.get();
+      Thread thread0 = new Thread(() -> refreshTokenRepository.deleteByTokenId(user));
+      thread0.start();
+      Thread thread1 = new Thread(() -> userRepository.deleteByUserId(id));
+      thread1.start();
     } catch (Exception e) {ResponseEntity.badRequest().body(e.getMessage()); System.out.println(e.getMessage());}
     return ResponseEntity.ok("Successfully");
   }
