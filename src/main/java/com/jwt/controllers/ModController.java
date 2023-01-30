@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -41,10 +42,10 @@ public class ModController extends Thread {
   @PreAuthorize("hasRole('ADMIN')")
   ResponseEntity<?> deleteUser(@PathVariable Long id, User user ) {
     try {
-      Thread thread0 = new Thread(() -> refreshTokenRepository.deleteByTokenId(user));
-      thread0.start();
-      Thread thread1 = new Thread(() -> userRepository.deleteByUserId(id));
-      thread1.start();
+      AtomicReference<Object> thread0 = new AtomicReference<>(refreshTokenRepository.deleteByTokenId(user));
+      thread0.get();
+      AtomicReference<Object> thread1 = new AtomicReference<>(userRepository.deleteByUserId(id));
+      thread1.get();
     } catch (Exception e) {ResponseEntity.badRequest().body(e.getMessage()); System.out.println(e.getMessage());}
     return ResponseEntity.ok("Successfully");
   }
