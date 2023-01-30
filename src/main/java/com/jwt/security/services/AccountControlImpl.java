@@ -106,8 +106,6 @@ public class AccountControlImpl implements AccountControl {
     }
 
     // Create new user's account
-    String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\S+$).{8,40}$";
-    Matcher matcher = Pattern.compile(regex).matcher(signUpRequest.getPassword());
     User user = new User(signUpRequest.getUsername(),
             signUpRequest.getEmail(),
             encoder.encode(signUpRequest.getPassword()));
@@ -140,6 +138,8 @@ public class AccountControlImpl implements AccountControl {
       });
     }
     user.setRoles(roles);
+    String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\S+$).{8,40}$";
+    Matcher matcher = Pattern.compile(regex).matcher(signUpRequest.getPassword());
     if (matcher.find()) {
       userRepository.save(user);
       return ResponseEntity.ok("User registered successfully !");
