@@ -4,6 +4,7 @@ import com.jwt.models.User;
 import com.jwt.payload.request.ChangePasswordRequest;
 import com.jwt.repository.RefreshTokenRepository;
 import com.jwt.repository.UserRepository;
+import com.jwt.security.services.AccountControl;
 import com.jwt.security.services.PasswordResetImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ public class ModController extends Thread {
   private final UserRepository userRepository;
   private final PasswordResetImpl passwordReset;
   private final RefreshTokenRepository refreshTokenRepository;
+  private final AccountControl accountControl;
 
   @GetMapping("/mod")
   @PreAuthorize("hasRole('MODERATOR') || hasRole('ADMIN')")
@@ -42,9 +44,14 @@ public class ModController extends Thread {
   ResponseEntity<?> deleteUser(@PathVariable Long id, User user ) {
     try {
       Thread thread0 = new Thread(() -> refreshTokenRepository.deleteByTokenId(user));
-      thread0.start();
+      synchronized (refreshTokenRepository.deleteByTokenId(user)) {
+        thread0.start();
+        accountControl.waitForBarrier();
+      }
       Thread thread1 = new Thread(() -> userRepository.deleteByUserId(id));
-      thread1.start();
+      synchronized (userRepository.deleteByUserId(id)) {
+        thread1.start();
+      }
     } catch (Exception e) {ResponseEntity.badRequest().body(e.getMessage()); System.out.println(e.getMessage());}
     return ResponseEntity.ok("Successfully");
   }

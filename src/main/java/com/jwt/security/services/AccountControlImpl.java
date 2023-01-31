@@ -26,6 +26,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.*;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -159,6 +161,16 @@ public class AccountControlImpl implements AccountControl {
     }
     userRepository.changePassword(encoder.encode(changePassword.getNewPassword()), changePassword.getEmail());
     return "Password Changed Successfully";
+  }
+
+  @Override
+  public void waitForBarrier() {
+    final CyclicBarrier barrier = new CyclicBarrier(1);
+    try {
+      barrier.await();
+    } catch (InterruptedException | BrokenBarrierException e) {
+      e.printStackTrace();
+    }
   }
 
 }
