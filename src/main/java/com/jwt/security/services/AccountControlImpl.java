@@ -165,7 +165,7 @@ public class AccountControlImpl implements AccountControl {
 
   @Override
   public void waitForBarrier() {
-    final CyclicBarrier barrier = new CyclicBarrier(2);
+    final CyclicBarrier barrier = new CyclicBarrier(1);
     try {
       barrier.await();
     } catch (InterruptedException | BrokenBarrierException e) {
