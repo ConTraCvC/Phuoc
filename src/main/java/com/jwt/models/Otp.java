@@ -22,7 +22,7 @@ public class Otp {
   @Column(nullable = false)
   private Date realTime;
 
-  @OneToOne(fetch = FetchType.EAGER)
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id",
           nullable = false)
   private User user;
