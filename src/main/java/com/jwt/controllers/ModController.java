@@ -48,6 +48,7 @@ public class ModController extends Thread {
         thread0.start();
         accountControl.waitForBarrier();
       }
+      accountControl.waitForBarrier();
       Thread thread1 = new Thread(() -> userRepository.deleteByUserId(id));
       synchronized (userRepository.deleteByUserId(id)) {
         thread1.start();
