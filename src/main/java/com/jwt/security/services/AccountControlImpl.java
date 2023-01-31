@@ -154,7 +154,7 @@ public class AccountControlImpl implements AccountControl {
   public String changePassword(@Valid @RequestBody ChangePasswordRequest changePassword){
     User user = userRepository.findByEmail(changePassword.getEmail());
     if (user == null) {
-      return ("Username not existed");
+      return "Username not existed";
     }
     if(!bCryptPasswordEncoder.matches(changePassword.getOldPassword(), user.getPassword())){
       return "Invalid Old Password";
