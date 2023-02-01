@@ -1,13 +1,13 @@
 package com.jwt.models;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Calendar;
 import java.util.Date;
 
-@Data
+@Getter
 @Entity
 @NoArgsConstructor
 public class Otp {

@@ -1,14 +1,14 @@
 package com.jwt.models;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @AllArgsConstructor
 @Entity
-@Data
+@Getter
 @NoArgsConstructor
 @Table(name = "roles")
 public class Role {

@@ -1,6 +1,6 @@
 package com.jwt.models;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -8,7 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 @Entity
-@Data
+@Getter
 @NoArgsConstructor
 public class PasswordResetToken {
   private static final int EXPIRATION_TIME = 10;
