@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -43,16 +44,10 @@ public class ModController extends Thread {
   @PreAuthorize("hasRole('ADMIN')")
   ResponseEntity<?> deleteUser(@PathVariable Long id, User user ) {
     try {
-      Thread thread0 = new Thread(() -> refreshTokenRepository.deleteByTokenId(user));
-      synchronized (refreshTokenRepository.deleteByTokenId(user)) {
-        thread0.start();
-        accountControl.waitForBarrier();
-      }
-      accountControl.waitForBarrier();
-      Thread thread1 = new Thread(() -> userRepository.deleteByUserId(id));
-      synchronized (userRepository.deleteByUserId(id)) {
-        thread1.start();
-      }
+       if (Objects.equals(user.getId(), id)){
+         refreshTokenRepository.deleteByTokenId(user);
+         userRepository.deleteByUserId(id);
+       }
     } catch (Exception e) {ResponseEntity.badRequest().body(e.getMessage()); System.out.println(e.getMessage());}
     return ResponseEntity.ok("Successfully");
   }
