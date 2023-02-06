@@ -1,9 +1,7 @@
 package com.jwt.payload.response;
 
 import java.io.Serial;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.jwt.models.User;
