@@ -163,14 +163,14 @@ public class AccountControlImpl implements AccountControl {
     return "Password Changed Successfully";
   }
 
-  @Override
-  public void waitForBarrier() {
-    final CyclicBarrier barrier = new CyclicBarrier(1);
-    try {
-      barrier.await();
-    } catch (InterruptedException | BrokenBarrierException e) {
-      e.printStackTrace();
-    }
-  }
+//  @Override
+//  public void waitForBarrier() {
+//    final CyclicBarrier barrier = new CyclicBarrier(1);
+//    try {
+//      barrier.await();
+//    } catch (InterruptedException | BrokenBarrierException e) {
+//      e.printStackTrace();
+//    }
+//  }
 
 }
