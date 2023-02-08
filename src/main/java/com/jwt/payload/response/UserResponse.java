@@ -29,7 +29,7 @@ public class UserResponse implements UserDetails {
 
     return new UserResponse(
         user.getId(), 
-        user.getUsername(), 
+        user.getUsername(),
         user.getEmail(),
         user.getPassword(),
             Collections.singleton(authorities));
