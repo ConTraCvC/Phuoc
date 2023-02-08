@@ -112,34 +112,32 @@ public class AccountControlImpl implements AccountControl {
             signUpRequest.getEmail(),
             encoder.encode(signUpRequest.getPassword()));
     Set<String> strRoles = signUpRequest.getRole();
-    Set<Role> roles = new HashSet<>();
 
     if (strRoles == null) {
       Role userRole = roleRepository.findByRoleCode(ERole.ROLE_USER)
               .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-      roles.add(userRole);
+      user.setRoles(userRole);
     } else {
       strRoles.forEach(role -> {
         switch (role) {
           case "admin" -> {
             Role adminRole = roleRepository.findByRoleCode(ERole.ROLE_ADMIN)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(adminRole);
+            user.setRoles(adminRole);
           }
           case "mod" -> {
             Role modRole = roleRepository.findByRoleCode(ERole.ROLE_MODERATOR)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(modRole);
+            user.setRoles(modRole);
           }
           default -> {
             Role userRole = roleRepository.findByRoleCode(ERole.ROLE_USER)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(userRole);
+            user.setRoles(userRole);
           }
         }
       });
     }
-    user.setRoles(roles);
     String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\S+$).{8,40}$";
     Matcher matcher = Pattern.compile(regex).matcher(signUpRequest.getPassword());
     if (matcher.find()) {

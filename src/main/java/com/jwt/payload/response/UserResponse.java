@@ -2,7 +2,6 @@ package com.jwt.payload.response;
 
 import java.io.Serial;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import com.jwt.models.User;
 import lombok.AllArgsConstructor;
@@ -26,16 +25,14 @@ public class UserResponse implements UserDetails {
   private Collection<? extends GrantedAuthority> authorities;
 
   public static UserResponse build(User user) {
-    List<GrantedAuthority> authorities = user.getRoles().stream()
-        .map(role -> new SimpleGrantedAuthority(role.getRoleCode().name()))
-        .collect(Collectors.toList());
+    SimpleGrantedAuthority authorities = new SimpleGrantedAuthority(user.getRoles().getRoleCode().name());
 
     return new UserResponse(
         user.getId(), 
         user.getUsername(), 
         user.getEmail(),
-        user.getPassword(), 
-        authorities);
+        user.getPassword(),
+            Collections.singleton(authorities));
   }
 
   @Override
