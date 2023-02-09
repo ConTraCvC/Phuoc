@@ -1,5 +1,6 @@
 package com.jwt.security.jwt;
 
+import java.time.Instant;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -28,14 +29,14 @@ public class JwtUtils {
     return Jwts.builder()
         .setSubject((userPrincipal.getUsername()))
         .setIssuedAt(new Date())
-        .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+        .setExpiration(Date.from(Instant.now().plusMillis(jwtExpirationMs)))
         .signWith(SignatureAlgorithm.HS512, jwtSecret)
         .compact();
   }
 
   public String generateTokenFromUsername(String username) {
     return Jwts.builder().setSubject(username).setIssuedAt(new Date())
-            .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs)).signWith(SignatureAlgorithm.HS512, jwtSecret)
+            .setExpiration(Date.from(Instant.now().plusMillis(jwtExpirationMs))).signWith(SignatureAlgorithm.HS512, jwtSecret)
             .compact();
   }
 
