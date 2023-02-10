@@ -43,10 +43,10 @@ public class PasswordResetImpl implements PasswordReset{
   private final JavaMailSender mailSender;
 
   public Optional<User> getUserByPasswordResetToken(String token, User user) {
-    return Optional.ofNullable(passwordResetTokenRepository.findByToken(token).getUser());
+    return Optional.of(passwordResetTokenRepository.findByToken(token).getUser());
   }
   public Optional<User> getUserByOtp(int otp, User user) {
-    return Optional.ofNullable(otpRepository.findByOtp(otp).getUser());
+    return Optional.of(otpRepository.findByOtp(otp).getUser());
   }
   // Regex pattern to match
   private final String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\S+$).{8,40}$";
