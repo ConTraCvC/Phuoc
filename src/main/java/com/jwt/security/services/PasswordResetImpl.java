@@ -85,7 +85,6 @@ public class PasswordResetImpl implements PasswordReset{
     userRepository.save(user);
   }
 
-
   private void createPasswordResetTokenForUser(User user, String rsToken) {
     PasswordResetToken passwordResetToken
             = new PasswordResetToken(rsToken, user);
