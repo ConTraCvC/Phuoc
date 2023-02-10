@@ -116,14 +116,13 @@ public class PasswordResetImpl implements PasswordReset{
     return ResponseEntity.badRequest().body("Wrong email address !");
   }
 
-  private String passwordResetTokenMail(String applicationUrl, String token) {
+  private void passwordResetTokenMail(String applicationUrl, String token) {
     String url =
             applicationUrl
                     + "/auth/savePassword?token="
                     + token;
 
     log.info(url);
-    return url;
   }
   private String applicationUrl(HttpServletRequest request) {
     return "http://localhost:3000" +
