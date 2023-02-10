@@ -59,8 +59,7 @@ public class PasswordResetImpl implements PasswordReset{
     }
     Calendar cal = Calendar.getInstance();
 
-    if (passwordResetToken.getExpirationTime().getTime()
-            - cal.getTime().getTime() <= 0) {
+    if (passwordResetToken.getExpirationTime().getTime() - cal.getTime().getTime() <= 0) {
       passwordResetTokenRepository.delete(passwordResetToken);
       return "Expired";
     }
