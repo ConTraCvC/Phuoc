@@ -9,6 +9,9 @@ import java.time.Instant;
 @Getter
 @Setter
 @Entity(name = "refreshToken")
+@NamedEntityGraph(name = "joined", includeAllAttributes = true ,attributeNodes = {
+        @NamedAttributeNode(value = "user", subgraph = "user")
+}, subgraphs = @NamedSubgraph(name = "user", attributeNodes = { @NamedAttributeNode("roles") }))
 public class RefreshToken {
 
   @Id
