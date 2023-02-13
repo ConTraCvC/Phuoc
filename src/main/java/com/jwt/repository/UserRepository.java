@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface UserRepository extends JpaRepository<User, Long> {
 
   @NotNull Optional<User> findById(@NotNull Long id);
+
   Optional<User> findByUsername(String username);
 
   Boolean existsByUsername(String username);
