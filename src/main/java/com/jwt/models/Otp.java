@@ -10,7 +10,7 @@ import java.util.Date;
 @Getter
 @Entity
 @NoArgsConstructor
-@NamedEntityGraph(name = "passJoin", includeAllAttributes = true ,attributeNodes = {
+@NamedEntityGraph(name = "OtpJoin", includeAllAttributes = true ,attributeNodes = {
         @NamedAttributeNode(value = "user", subgraph = "user")
 }, subgraphs = @NamedSubgraph(name = "user", attributeNodes = { @NamedAttributeNode("password") }))
 public class Otp {

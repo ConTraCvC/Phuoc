@@ -31,6 +31,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
   User findByEmail(String email);
 
 
+  @EntityGraph("passJoin")
   @Modifying(clearAutomatically = true)
   @Query("update User c set c.password = :password where c.email = :email")
   void changePassword(@Param("password") String password, @Param("email") String email);
