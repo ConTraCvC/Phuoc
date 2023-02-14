@@ -10,6 +10,9 @@ import java.util.Date;
 @Getter
 @Entity
 @NoArgsConstructor
+@NamedEntityGraph(name = "passJoin", includeAllAttributes = true ,attributeNodes = {
+        @NamedAttributeNode(value = "user", subgraph = "user")
+}, subgraphs = @NamedSubgraph(name = "user", attributeNodes = { @NamedAttributeNode("password") }))
 public class Otp {
 
   private static final int EXPIRATION_TIME = 10;

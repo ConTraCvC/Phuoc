@@ -1,6 +1,7 @@
 package com.jwt.repository;
 
 import com.jwt.models.Otp;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -12,6 +13,7 @@ import javax.transaction.Transactional;
 @Repository
 public interface OtpRepository extends JpaRepository<Otp, Long> {
 
+  @EntityGraph("passJoin")
   Otp findByOtp(int otp);
 
   @Transactional
