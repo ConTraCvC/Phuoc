@@ -26,8 +26,8 @@ public class AuthController {
   private final PasswordReset passwordReset;
 
   @PostMapping("/sign-in")
-  ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response, User user) {
-    return ResponseEntity.ok(accountControl.authenticateUser(loginRequest, response, user));
+  ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    return ResponseEntity.ok(accountControl.authenticateUser(loginRequest, response));
   }
 
   @PostMapping("/sign-up")
