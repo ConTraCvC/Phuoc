@@ -45,9 +45,6 @@ public class PasswordResetImpl implements PasswordReset{
   private final OtpRepository otpRepository;
   private final JavaMailSender mailSender;
 
-  public Optional<User> getUserByPasswordResetToken(String token, User user) {
-    return Optional.of(passwordResetTokenRepository.findByToken(token).getUser());
-  }
   public Optional<User> getUserByOtp(int otp, User user) {
     return Optional.of(otpRepository.findByOtp(otp).getUser());
   }
@@ -164,7 +161,7 @@ public class PasswordResetImpl implements PasswordReset{
     if(!result.equalsIgnoreCase("Valid")){
       return "Invalid Token";
     }
-    Optional<User> user = getUserByPasswordResetToken(token, new User());
+    Optional<User> user = Optional.ofNullable(passwordResetTokenRepository.findByToken(token).getUser());
     if(user.isPresent()){
       Matcher matcher = Pattern.compile(regex).matcher(password.getNewPassword());
       if (matcher.find()){
