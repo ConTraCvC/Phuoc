@@ -11,6 +11,7 @@ import com.jwt.repository.*;
 import com.jwt.security.jwt.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
@@ -36,6 +38,9 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class AccountControlImpl implements AccountControl {
+
+  @Value("${jwtRefreshExpirationMs}")
+  private Long refreshTokenDurationMs;
   private final JwtUtils jwtUtils;
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
@@ -58,7 +63,7 @@ public class AccountControlImpl implements AccountControl {
       RefreshToken refreshToken = refreshTokenService.createRefreshToken(userResponse.getId());
 //      refreshTokenRepository.deleteAllRf();
       if(refreshTokenRepository.findByUserId(userResponse.getId()).isPresent()){
-        refreshTokenRepository.updateRefreshToken(refreshToken.getToken(), userResponse.getId());}
+        refreshTokenRepository.updateRefreshToken(refreshToken.getToken(), Date.from(refreshToken.getExpiryDate()), userResponse.getId());}
       else {
         refreshTokenRepository.save(refreshToken);}
 

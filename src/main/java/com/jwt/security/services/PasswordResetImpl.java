@@ -13,6 +13,7 @@ import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,6 +37,8 @@ import java.util.regex.Pattern;
 @Transactional
 public class PasswordResetImpl implements PasswordReset{
 
+  @Value("${jwtRefreshExpirationMs}")
+  private Long refreshTokenDurationMs;
   private final PasswordResetTokenRepository passwordResetTokenRepository;
   private final UserRepository userRepository;
   private final PasswordEncoder encoder;
