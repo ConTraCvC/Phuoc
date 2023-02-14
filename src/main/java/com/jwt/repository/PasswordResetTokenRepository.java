@@ -12,9 +12,10 @@ import javax.transaction.Transactional;
 @Repository
 public interface PasswordResetTokenRepository extends JpaRepository<PasswordResetToken, Long> {
 
-  @EntityGraph("passJoin")
+  @EntityGraph("PassJoin")
   PasswordResetToken findByToken(String token);
 
+  @EntityGraph("PassJoin")
   void deleteByToken(String token);
 
   @Transactional

@@ -10,7 +10,7 @@ import java.util.Date;
 @Entity
 @Getter
 @NoArgsConstructor
-@NamedEntityGraph(name = "passJoin", includeAllAttributes = true ,attributeNodes = {
+@NamedEntityGraph(name = "PassJoin", includeAllAttributes = true ,attributeNodes = {
         @NamedAttributeNode(value = "user", subgraph = "user")
 }, subgraphs = @NamedSubgraph(name = "user", attributeNodes = { @NamedAttributeNode("password") }))
 public class PasswordResetToken {
