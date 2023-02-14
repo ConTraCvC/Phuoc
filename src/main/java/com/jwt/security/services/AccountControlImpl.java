@@ -57,9 +57,9 @@ public class AccountControlImpl implements AccountControl {
       UserResponse userResponse = (UserResponse) authentication.getPrincipal();
       RefreshToken refreshToken = refreshTokenService.createRefreshToken(userResponse.getId());
 //      refreshTokenRepository.deleteAllRf();
-        if(refreshTokenRepository.findByUserId(userResponse.getId()).isPresent()){
-                refreshTokenRepository.updateRefreshToken(refreshToken.getToken(), userResponse.getId());}
-        else {
+      if(refreshTokenRepository.findByUserId(userResponse.getId()).isPresent()){
+        refreshTokenRepository.updateRefreshToken(refreshToken.getToken(), userResponse.getId());}
+      else {
         refreshTokenRepository.save(refreshToken);}
 
 //      Cookie cookie = new Cookie("token", jwt);
