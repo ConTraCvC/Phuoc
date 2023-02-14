@@ -18,7 +18,7 @@ public class RefreshToken {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+  @OneToOne(fetch = FetchType.LAZY)
   private User user;
 
   @Column(nullable = false, unique = true)
