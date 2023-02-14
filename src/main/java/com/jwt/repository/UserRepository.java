@@ -20,6 +20,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
   @EntityGraph("joined")
   @NotNull Optional<User> findById(@NotNull Long id);
 
+  @EntityGraph("roleJoin")
   Optional<User> findByUsername(String username);
 
   Boolean existsByUsername(String username);

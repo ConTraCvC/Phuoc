@@ -56,7 +56,7 @@ public class AccountControlImpl implements AccountControl {
       String jwt = jwtUtils.generateJwtToken(authentication);
       UserResponse userResponse = (UserResponse) authentication.getPrincipal();
       RefreshToken refreshToken = refreshTokenService.createRefreshToken(userResponse.getId());
-      refreshTokenRepository.deleteAll();
+      refreshTokenRepository.deleteAllRf();
 //      Cookie cookie = new Cookie("token", jwt);
 //      cookie.setHttpOnly(true);
 //      cookie.setSecure(true);

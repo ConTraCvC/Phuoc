@@ -18,7 +18,9 @@ import javax.validation.constraints.Size;
       @UniqueConstraint(columnNames = "username"),
       @UniqueConstraint(columnNames = "email") 
     })
-
+@NamedEntityGraph(name = "roleJoin", includeAllAttributes = true ,attributeNodes = {
+        @NamedAttributeNode(value = "roles", subgraph = "roles")
+}, subgraphs = @NamedSubgraph(name = "roles", attributeNodes = { @NamedAttributeNode("roleCode") }))
 public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
