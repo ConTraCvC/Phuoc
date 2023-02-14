@@ -27,6 +27,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
   Boolean existsByEmail(String email);
 
+  @EntityGraph("roleJoin")
   User findByEmail(String email);
 
 
