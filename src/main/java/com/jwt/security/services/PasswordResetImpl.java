@@ -45,9 +45,6 @@ public class PasswordResetImpl implements PasswordReset{
   private final OtpRepository otpRepository;
   private final JavaMailSender mailSender;
 
-  public Optional<User> getUserByOtp(int otp, User user) {
-    return Optional.of(otpRepository.findByOtp(otp).getUser());
-  }
   // Regex pattern to match
   private final String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\S+$).{8,40}$";
 
@@ -181,7 +178,7 @@ public class PasswordResetImpl implements PasswordReset{
     if (!result.equalsIgnoreCase("Valid")) {
       return "Invalid OTP";
     }
-    Optional<User> user = getUserByOtp(otp, new User());
+    Optional<User> user = Optional.ofNullable(otpRepository.findByOtp(otp).getUser());
     if(user.isPresent()){
       Matcher matcher = Pattern.compile(regex).matcher(password.getNewPassword());
       if(matcher.find()){
