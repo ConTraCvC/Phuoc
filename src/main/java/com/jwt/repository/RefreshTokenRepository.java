@@ -25,6 +25,10 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
   void deleteAllRf();
 
   @Modifying(clearAutomatically = true)
+  @Query(value = "update refresh_token set token=:token where user_id=:user_id", nativeQuery = true)
+  void updateRefreshToken(@Param("token")String token, @Param("user_id") Long id);
+
+  @Modifying(clearAutomatically = true)
   @Query("delete refreshToken c where c.user = :user")
   void deleteByTokenId(@Param("user") User id);
 }

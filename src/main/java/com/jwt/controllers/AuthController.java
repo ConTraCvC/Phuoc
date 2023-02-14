@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import com.jwt.models.PasswordResetToken;
+import com.jwt.models.User;
 import com.jwt.payload.request.ChangePasswordRequest;
 import com.jwt.payload.request.RefreshTokenRequest;
 import com.jwt.security.services.AccountControl;
@@ -25,8 +26,8 @@ public class AuthController {
   private final PasswordReset passwordReset;
 
   @PostMapping("/sign-in")
-  ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-    return ResponseEntity.ok(accountControl.authenticateUser(loginRequest, response));
+  ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response, User user) {
+    return ResponseEntity.ok(accountControl.authenticateUser(loginRequest, response, user));
   }
 
   @PostMapping("/sign-up")

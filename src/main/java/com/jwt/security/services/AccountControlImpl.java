@@ -47,7 +47,7 @@ public class AccountControlImpl implements AccountControl {
 
   @Override
   public ResponseEntity<?> authenticateUser (@Valid @RequestBody LoginRequest loginRequest,
-                                             HttpServletResponse response) {
+                                             HttpServletResponse response, User user) {
     try {
       Authentication authentication = authenticationManager.authenticate(
               new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
@@ -56,7 +56,8 @@ public class AccountControlImpl implements AccountControl {
       String jwt = jwtUtils.generateJwtToken(authentication);
       UserResponse userResponse = (UserResponse) authentication.getPrincipal();
       RefreshToken refreshToken = refreshTokenService.createRefreshToken(userResponse.getId());
-      refreshTokenRepository.deleteAllRf();
+//      refreshTokenRepository.deleteAllRf();
+        refreshTokenRepository.updateRefreshToken(refreshToken.getToken(), userResponse.getId());
 //      Cookie cookie = new Cookie("token", jwt);
 //      cookie.setHttpOnly(true);
 //      cookie.setSecure(true);
