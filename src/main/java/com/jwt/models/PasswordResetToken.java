@@ -10,9 +10,9 @@ import java.util.Date;
 @Entity
 @Getter
 @NoArgsConstructor
-@NamedEntityGraph(name = "PassJoin", includeAllAttributes = true ,attributeNodes = {
-        @NamedAttributeNode(value = "token", subgraph = "token")
-}, subgraphs = @NamedSubgraph(name = "token", attributeNodes = { @NamedAttributeNode("id") }))
+@NamedEntityGraph(name = "TokenJoin", includeAllAttributes = true ,attributeNodes = {
+        @NamedAttributeNode(value = "token")
+})
 public class PasswordResetToken {
   private static final int EXPIRATION_TIME = 10;
 
