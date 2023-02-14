@@ -15,7 +15,6 @@ public interface PasswordResetTokenRepository extends JpaRepository<PasswordRese
   @EntityGraph("PassJoin")
   PasswordResetToken findByToken(String token);
 
-  @EntityGraph("PassJoin")
   void deleteByToken(String token);
 
   @Transactional
