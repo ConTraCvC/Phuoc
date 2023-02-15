@@ -5,7 +5,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import com.jwt.models.PasswordResetToken;
-import com.jwt.models.User;
 import com.jwt.payload.request.ChangePasswordRequest;
 import com.jwt.payload.request.RefreshTokenRequest;
 import com.jwt.security.services.AccountControl;
