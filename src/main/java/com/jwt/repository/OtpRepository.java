@@ -13,7 +13,7 @@ import javax.transaction.Transactional;
 @Repository
 public interface OtpRepository extends JpaRepository<Otp, Long> {
 
-  @EntityGraph("passJoin")
+  @EntityGraph(type = EntityGraph.EntityGraphType.FETCH, value = "otpJoin")
   Otp findByOtp(int otp);
 
   @Transactional

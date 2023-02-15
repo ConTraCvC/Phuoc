@@ -38,9 +38,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class AccountControlImpl implements AccountControl {
-
-  @Value("${jwtRefreshExpirationMs}")
-  private Long refreshTokenDurationMs;
   private final JwtUtils jwtUtils;
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
