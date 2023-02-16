@@ -13,6 +13,7 @@ import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -79,7 +80,8 @@ public class PasswordResetImpl implements PasswordReset{
     userRepository.save(user);
   }
 
-  private void createPasswordResetTokenForUser(User user, String rsToken) {
+  @CacheEvict(cacheNames = "tokens", beforeInvocation = false, key = "#result.id")
+  public void createPasswordResetTokenForUser(User user, String rsToken) {
     PasswordResetToken passwordResetToken
             = new PasswordResetToken(rsToken, user);
     passwordResetTokenRepository.save(passwordResetToken);

@@ -1,6 +1,7 @@
 package com.jwt.repository;
 
 import com.jwt.models.PasswordResetToken;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -14,6 +15,7 @@ import javax.transaction.Transactional;
 public interface PasswordResetTokenRepository extends JpaRepository<PasswordResetToken, Long> {
 
   @EntityGraph(type = EntityGraph.EntityGraphType.FETCH, value = "tokenJoin")
+  @Cacheable("tokens")
   PasswordResetToken findByToken(@Param("token") String token);
 
   void deleteByToken(String token);
