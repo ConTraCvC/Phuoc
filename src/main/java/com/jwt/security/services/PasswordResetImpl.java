@@ -14,6 +14,7 @@ import com.twilio.type.PhoneNumber;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -80,11 +81,12 @@ public class PasswordResetImpl implements PasswordReset{
     userRepository.save(user);
   }
 
-  @CacheEvict(cacheNames = "tokens", beforeInvocation = false, key = "#rsToken.id")
+  @CachePut(value = "token")
   public void createPasswordResetTokenForUser(User user, String rsToken) {
     PasswordResetToken passwordResetToken
             = new PasswordResetToken(rsToken, user);
-    passwordResetTokenRepository.save(passwordResetToken);
+    passwordResetTokenRepository.save(passwordResetToken)
+    ;
   }
 
   @Override
@@ -148,13 +150,14 @@ public class PasswordResetImpl implements PasswordReset{
     return ResponseEntity.ok("OTP Send Successfully");
   }
 
-  @CacheEvict(cacheNames = "otp", beforeInvocation = false, key = "#otp.id")
+  @CachePut(value = "otp")
   public void createPasswordResetOtp(User user, int otp) {
     Otp otpCode = new Otp(user, otp);
     otpRepository.save(otpCode);
   }
 
   @Override
+  @CacheEvict(value = "token", beforeInvocation = false, key = "#token")
   public String savePassword(@Valid @RequestParam("token") String token,
                              @Valid @RequestBody ChangePasswordRequest password){
     String result = validatePasswordResetToken(token);
@@ -175,6 +178,7 @@ public class PasswordResetImpl implements PasswordReset{
   }
 
   @Override
+  @CacheEvict(cacheNames = "otp", beforeInvocation = false, key = "#otp")
   public String saveOtpPassword(@Valid @RequestParam("otp") int otp,
                                 @Valid @RequestBody ChangePasswordRequest password) {
     String result = validatePasswordResetOtp(otp);

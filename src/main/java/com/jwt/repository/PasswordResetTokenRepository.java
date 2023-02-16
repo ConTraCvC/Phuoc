@@ -15,7 +15,7 @@ import javax.transaction.Transactional;
 public interface PasswordResetTokenRepository extends JpaRepository<PasswordResetToken, Long> {
 
   @EntityGraph(type = EntityGraph.EntityGraphType.FETCH, value = "tokenJoin")
-  @Cacheable("tokens")
+  @Cacheable("token")
   PasswordResetToken findByToken(@Param("token") String token);
 
   void deleteByToken(String token);
