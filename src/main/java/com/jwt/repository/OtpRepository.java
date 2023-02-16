@@ -1,6 +1,7 @@
 package com.jwt.repository;
 
 import com.jwt.models.Otp;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -14,6 +15,7 @@ import javax.transaction.Transactional;
 public interface OtpRepository extends JpaRepository<Otp, Long> {
 
   @EntityGraph(type = EntityGraph.EntityGraphType.FETCH, value = "otpJoin")
+  @Cacheable("otp")
   Otp findByOtp(int otp);
 
   @Transactional

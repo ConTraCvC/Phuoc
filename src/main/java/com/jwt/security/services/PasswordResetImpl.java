@@ -80,7 +80,7 @@ public class PasswordResetImpl implements PasswordReset{
     userRepository.save(user);
   }
 
-  @CacheEvict(cacheNames = "tokens", beforeInvocation = false, key = "#result.id")
+  @CacheEvict(cacheNames = "tokens", beforeInvocation = false, key = "#rsToken.id")
   public void createPasswordResetTokenForUser(User user, String rsToken) {
     PasswordResetToken passwordResetToken
             = new PasswordResetToken(rsToken, user);
@@ -147,7 +147,9 @@ public class PasswordResetImpl implements PasswordReset{
             "Limited reset OTP code for 10 minutes: " + otpCode).create();
     return ResponseEntity.ok("OTP Send Successfully");
   }
-  private void createPasswordResetOtp(User user, int otp) {
+
+  @CacheEvict(cacheNames = "otp", beforeInvocation = false, key = "#otp.id")
+  public void createPasswordResetOtp(User user, int otp) {
     Otp otpCode = new Otp(user, otp);
     otpRepository.save(otpCode);
   }
