@@ -29,7 +29,7 @@ public class ModController extends Thread {
   @GetMapping("/mod")
   @PreAuthorize("hasRole('MODERATOR') || hasRole('ADMIN')")
   List<User> getUser() {
-    return userRepository.findAll();
+    return userRepository.findAllUser();
   }
 
   @GetMapping("/user/{id}")

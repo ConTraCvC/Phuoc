@@ -1,5 +1,6 @@
 package com.jwt.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.jetbrains.annotations.NotNull;
@@ -38,4 +39,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
   @Modifying(clearAutomatically = true)
   @Query("delete User c where c.id = :id")
   void deleteByUserId(@Param("id") @NotNull Long id );
+
+  @EntityGraph("roleJoin")
+  @Query("select u from User u")
+  List<User> findAllUser();
 }
