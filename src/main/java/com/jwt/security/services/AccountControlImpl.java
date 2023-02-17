@@ -101,15 +101,11 @@ public class AccountControlImpl implements AccountControl {
   @Override
   public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
 
-    if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+    Optional<User> users = Optional.ofNullable(userRepository.findByEmail(signUpRequest.getEmail()));
+    if (users.isPresent()){
       return ResponseEntity
               .badRequest()
-              .body(new MessageResponse("Error: Username is already taken!"));
-    }
-    if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-      return ResponseEntity
-              .badRequest()
-              .body(new MessageResponse("Error: Email is already in use!"));
+              .body(new MessageResponse("Error: Username or email is already in use!"));
     }
 
     // Create new user's account
