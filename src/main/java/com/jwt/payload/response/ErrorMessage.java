@@ -1,13 +1,13 @@
 package com.jwt.payload.response;
 
-import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.util.Date;
 import java.util.List;
 
-@Data
+@Setter
 @NoArgsConstructor
 @Accessors(chain = true)
 public class ErrorMessage {

@@ -1,12 +1,9 @@
 package com.jwt.payload.response;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
 
-@Data
+@AllArgsConstructor
 public class ResetPasswordResponse {
   private String rsToken;
 
-  public ResetPasswordResponse(String token) {
-    this.rsToken = token;
-  }
 }
