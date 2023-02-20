@@ -29,7 +29,7 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
 
   @Modifying(clearAutomatically = true)
   @Query(value = "update refresh_token set token=:token, expiry_date=:expiry_date where user_id=:user_id", nativeQuery = true)
-  void updateRefreshToken(@Param("token")String token, @Param("expiry_date")Date date, @Param("user_id") Long id);
+  void updateRefreshToken(@Param("token") String token, @Param("expiry_date") Date date, @Param("user_id") Long id);
 
   @Modifying(clearAutomatically = true)
   @Query("delete refreshToken c where c.user = :user")
