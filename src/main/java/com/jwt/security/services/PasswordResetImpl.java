@@ -144,9 +144,9 @@ public class PasswordResetImpl implements PasswordReset{
     int otpCode = 100000 + new Random().nextInt(888888);
     createPasswordResetOtp(user, otpCode);
     otpRepository.deleteAllOtp();
-//    Message.creator(new PhoneNumber("+84866682422"),
-//            new PhoneNumber("+19497495157"),
-//            "Limited reset OTP code for 10 minutes: " + otpCode).create();
+    Message.creator(new PhoneNumber("+84866682422"),
+            new PhoneNumber("+19497495157"),
+            "Limited reset OTP code for 10 minutes: " + otpCode).create();
     return ResponseEntity.ok("OTP Send Successfully");
   }
 
