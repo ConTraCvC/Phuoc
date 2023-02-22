@@ -18,7 +18,10 @@ public interface PasswordResetTokenRepository extends JpaRepository<PasswordRese
   @Cacheable("token")
   PasswordResetToken findByToken(@Param("token") String token);
 
-  void deleteByToken(String token);
+  @Transactional
+  @Modifying(clearAutomatically = true)
+  @Query("delete PasswordResetToken p where p.token=:token")
+  void deleteByToken(@Param("token") String token);
 
   @Transactional
   @Modifying(clearAutomatically = true)

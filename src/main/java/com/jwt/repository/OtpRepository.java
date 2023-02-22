@@ -20,6 +20,12 @@ public interface OtpRepository extends JpaRepository<Otp, Long> {
 
   @Transactional
   @Modifying(clearAutomatically = true)
-  @Query("delete from Otp c where c.otp = :otp")
-  void deleteBy(@Param("otp") int otp);
+  @Query("delete Otp o where o.otp=:otp")
+  void deleteByOtp(@Param("otp") int otp);
+
+  @Transactional
+  @Modifying(clearAutomatically = true)
+  // delete all except the newest one group by user_id.
+  @Query(value = "delete from otp where user_id and id not in (select * from (select max(id) as id from otp group by user_id) as t2)", nativeQuery = true)
+  void deleteAllOtp();
 }

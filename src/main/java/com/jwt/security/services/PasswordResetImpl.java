@@ -139,14 +139,14 @@ public class PasswordResetImpl implements PasswordReset{
 
   @Override
   public ResponseEntity<?> resetPasswordOTP(ChangePasswordRequest password) {
-    Twilio.init("AC428df5bd302a88e1e314d9ece0159181", "7fc4e2131a7bf04ea775faaf5ea8dee7");
+    Twilio.init("AC428df5bd302a88e1e314d9ece0159181", "d60b5c6548496920f5d27bb9d2220bac");
     User user = userRepository.findByEmail(password.getEmail());
-    Random r = new Random();
-    int otpCode = 100000 + r.nextInt(888888);
+    int otpCode = 100000 + new Random().nextInt(888888);
     createPasswordResetOtp(user, otpCode);
-    Message.creator(new PhoneNumber("+84866682422"),
-            new PhoneNumber("+19497495157"),
-            "Limited reset OTP code for 10 minutes: " + otpCode).create();
+    otpRepository.deleteAllOtp();
+//    Message.creator(new PhoneNumber("+84866682422"),
+//            new PhoneNumber("+19497495157"),
+//            "Limited reset OTP code for 10 minutes: " + otpCode).create();
     return ResponseEntity.ok("OTP Send Successfully");
   }
 
@@ -169,7 +169,8 @@ public class PasswordResetImpl implements PasswordReset{
       Matcher matcher = Pattern.compile(regex).matcher(password.getNewPassword());
       if (matcher.find()){
         changePassword(user.get(), encoder.encode(password.getNewPassword()));
-        passwordResetTokenRepository.deleteByToken(token);
+        Thread thread = new Thread(() -> passwordResetTokenRepository.deleteByToken(token));
+        thread.start();
         return "Password Reset Successfully !";}
       else { return "Password does not match wellFormed !";}
     } else {
@@ -190,7 +191,8 @@ public class PasswordResetImpl implements PasswordReset{
       Matcher matcher = Pattern.compile(regex).matcher(password.getNewPassword());
       if(matcher.find()){
         changePassword(user.get(), encoder.encode(password.getNewPassword()));
-        otpRepository.deleteBy(otp);
+        Thread thread = new Thread(() -> otpRepository.deleteByOtp(otp));
+        thread.start();
         return "Password Reset Successfully";}
       else { return "Password does not match wellFormed !";}
     } else {
