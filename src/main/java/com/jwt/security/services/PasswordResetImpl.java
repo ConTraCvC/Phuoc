@@ -100,9 +100,16 @@ public class PasswordResetImpl implements PasswordReset{
     String token;
     if (user != null) {
       token = UUID.randomUUID().toString();
-      createPasswordResetTokenForUser(user, token);
+      Thread thread = new Thread(() -> createPasswordResetTokenForUser(user, token));
+      thread.start();
+      try {
+        thread.join();
+      } catch (InterruptedException e) {
+        System.out.println(Arrays.toString(e.getStackTrace()));
+      }
       passwordResetTokenMail(applicationUrl(request), token);
-      passwordResetTokenRepository.deleteAll();
+      Thread thread1 = new Thread(passwordResetTokenRepository::deleteAll);
+      thread1.start();
       applicationUrl(request);
 //            SimpleMailMessage message = new SimpleMailMessage();
 //            try {
@@ -153,11 +160,22 @@ public class PasswordResetImpl implements PasswordReset{
     Twilio.init("AC428df5bd302a88e1e314d9ece0159181", "d60b5c6548496920f5d27bb9d2220bac");
     User user = userRepository.findByEmail(password.getEmail());
     int otpCode = 100000 + new Random().nextInt(888888);
-    createPasswordResetOtp(user, otpCode);
-    otpRepository.deleteAllOtp();
-    Message.creator(new PhoneNumber("+84866682422"),
-            new PhoneNumber("+19497495157"),
-            "Limited reset OTP code for 10 minutes: " + otpCode).create();
+    Thread thread = new Thread(() -> createPasswordResetOtp(user, otpCode));
+      thread.start();
+      try {
+        thread.join();
+      } catch (InterruptedException e) {
+        System.out.println(Arrays.toString(e.getStackTrace()));
+      }
+    Thread thread1 = new Thread(otpRepository::deleteAllOtp);
+      thread1.start();
+    try {
+      Message.creator(new PhoneNumber("+84866682422"),
+              new PhoneNumber("+19497495157"),
+              "Limited reset OTP code for 10 minutes: " + otpCode).create();
+    } catch (Exception e) {
+      System.out.println("Send SMS failed");
+    }
     return ResponseEntity.ok("OTP Send Successfully");
   }
 
