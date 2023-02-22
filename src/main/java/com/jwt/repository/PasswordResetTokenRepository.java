@@ -16,7 +16,7 @@ public interface PasswordResetTokenRepository extends JpaRepository<PasswordRese
 
   @EntityGraph(type = EntityGraph.EntityGraphType.FETCH, value = "tokenJoin")
   @Cacheable("token")
-  PasswordResetToken findByToken(@Param("token") String token);
+  PasswordResetToken findByToken(String token);
 
   @Transactional
   @Modifying(clearAutomatically = true)
