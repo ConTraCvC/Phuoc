@@ -97,9 +97,8 @@ public class PasswordResetImpl implements PasswordReset{
   @Override
   public ResponseEntity<?> resetPassword(@RequestBody ChangePasswordRequest password, HttpServletRequest request, PasswordResetToken resetToken) {
     User user = userRepository.findByEmail(password.getEmail());
-    String token;
     if (user != null) {
-      token = UUID.randomUUID().toString();
+      String token = UUID.randomUUID().toString();
       Thread thread = new Thread(() -> createPasswordResetTokenForUser(user, token));
       thread.start();
       try {
@@ -174,7 +173,7 @@ public class PasswordResetImpl implements PasswordReset{
               new PhoneNumber("+19497495157"),
               "Limited reset OTP code for 10 minutes: " + otpCode).create();
     } catch (Exception e) {
-      System.out.println("Send SMS failed");
+      return ResponseEntity.badRequest().body("Send SMS failed");
     }
     return ResponseEntity.ok("OTP Send Successfully");
   }
