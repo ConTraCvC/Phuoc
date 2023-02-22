@@ -16,6 +16,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -110,16 +111,16 @@ public class PasswordResetImpl implements PasswordReset{
       Thread thread1 = new Thread(passwordResetTokenRepository::deleteAll);
       thread1.start();
       applicationUrl(request);
-//            SimpleMailMessage message = new SimpleMailMessage();
-//            try {
-//                message.setTo(password.getEmail());
-//                message.setSubject("Limited time to 10 minutes. Click the link to Reset your Password: ");
-//                message.setText("Hi, User.\n Forgot password?\n Here is the link to reset your password\n" + passwordResetTokenMail(applicationUrl(request), token) + "\nGood luck!");
-//                mailSender.send(message);
-//            } catch (Exception e) {
-//                passwordResetTokenRepository.deleteByToken(token);
-//                return ResponseEntity.ok("Invalid email address or mail server");
-//            }
+        SimpleMailMessage message = new SimpleMailMessage();
+//        try {
+//          message.setTo(password.getEmail());
+//          message.setSubject("Limited time to 10 minutes. Click the link to Reset your Password: ");
+//          message.setText("Hi, User.\n Forgot password?\n Here is the link to reset your password\n" + passwordResetTokenMail(applicationUrl(request), token) + "\nGood luck!");
+//          mailSender.send(message);
+//        } catch (Exception e) {
+//          passwordResetTokenRepository.deleteByToken(token);
+//          return ResponseEntity.badRequest().body("Invalid email address or mail server");
+//        }
       return ResponseEntity.ok(new ResetPasswordResponse(token));
     }
     return ResponseEntity.badRequest().body("Wrong email address !");
