@@ -137,6 +137,12 @@ public class PasswordResetImpl implements PasswordReset{
 //            request.getContextPath();
 //  }
 
+  @CachePut(value = "otp")
+  public void createPasswordResetOtp(User user, int otp) {
+    Otp otpCode = new Otp(user, otp);
+    otpRepository.save(otpCode);
+  }
+
   @Override
   public ResponseEntity<?> resetPasswordOTP(ChangePasswordRequest password) {
     Twilio.init("AC428df5bd302a88e1e314d9ece0159181", "d60b5c6548496920f5d27bb9d2220bac");
@@ -148,12 +154,6 @@ public class PasswordResetImpl implements PasswordReset{
             new PhoneNumber("+19497495157"),
             "Limited reset OTP code for 10 minutes: " + otpCode).create();
     return ResponseEntity.ok("OTP Send Successfully");
-  }
-
-  @CachePut(value = "otp")
-  public void createPasswordResetOtp(User user, int otp) {
-    Otp otpCode = new Otp(user, otp);
-    otpRepository.save(otpCode);
   }
 
   @Override
