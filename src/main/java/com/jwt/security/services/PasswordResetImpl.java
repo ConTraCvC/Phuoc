@@ -196,6 +196,7 @@ public class PasswordResetImpl implements PasswordReset{
           changeTokenPassword(encoder.encode(password.getNewPassword()), user.get(), passwordResetToken.getId());
         } catch (InterruptedException e) {
           System.out.println(Arrays.toString(e.getStackTrace()));
+          return "Something went wrong!";
         }
         return "Password Reset Successfully !";}
       else { return "Password does not match wellFormed !";}
@@ -221,6 +222,7 @@ public class PasswordResetImpl implements PasswordReset{
           changeOtpPassword(encoder.encode(password.getNewPassword()), user.get(), otpCode.getId());
         } catch (InterruptedException e) {
           System.out.println(Arrays.toString(e.getStackTrace()));
+          return "Something went wrong!";
         }
         return "Password Reset Successfully";}
       else { return "Password does not match wellFormed !";}
