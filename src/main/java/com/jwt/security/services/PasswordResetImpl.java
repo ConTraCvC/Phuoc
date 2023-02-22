@@ -111,7 +111,7 @@ public class PasswordResetImpl implements PasswordReset{
       Thread thread1 = new Thread(passwordResetTokenRepository::deleteAll);
       thread1.start();
       applicationUrl(request);
-        SimpleMailMessage message = new SimpleMailMessage();
+//        SimpleMailMessage message = new SimpleMailMessage();
 //        try {
 //          message.setTo(password.getEmail());
 //          message.setSubject("Limited time to 10 minutes. Click the link to Reset your Password: ");
