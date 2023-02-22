@@ -118,7 +118,6 @@ public class PasswordResetImpl implements PasswordReset{
 //          message.setText("Hi, User.\n Forgot password?\n Here is the link to reset your password\n" + passwordResetTokenMail(applicationUrl(request), token) + "\nGood luck!");
 //          mailSender.send(message);
 //        } catch (Exception e) {
-//          passwordResetTokenRepository.deleteByToken(token);
 //          return ResponseEntity.badRequest().body("Invalid email address or mail server");
 //        }
       return ResponseEntity.ok(new ResetPasswordResponse(token));
