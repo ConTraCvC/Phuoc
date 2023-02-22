@@ -131,11 +131,6 @@ public class AccountControlImpl implements AccountControl {
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             user.setRoles(modRole);
           }
-          default -> {
-            Role userRole = roleRepository.findByRoleCode(ERole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            user.setRoles(userRole);
-          }
         }
       });
     }
