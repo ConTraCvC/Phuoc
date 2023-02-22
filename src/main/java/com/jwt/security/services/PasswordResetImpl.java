@@ -72,18 +72,18 @@ public class PasswordResetImpl implements PasswordReset{
     return "Valid";
   }
 
-  private void changeTokenPassword(String newPassword, User id) throws InterruptedException {
+  private void changeTokenPassword(String newPassword, User id, Long token) throws InterruptedException {
     Thread thread = new Thread(() -> userRepository.setNewPassword(newPassword, id.getId()));
       thread.start();
       thread.join();
-    Thread thread1 = new Thread(() -> passwordResetTokenRepository.setExpiredTime(Date.from(Instant.now().plusMillis(-700000))));
+    Thread thread1 = new Thread(() -> passwordResetTokenRepository.setExpiredTime(Date.from(Instant.now().plusMillis(-700000)), token));
       thread1.start();
   }
-  private void changeOtpPassword(String newPassword, User id) throws InterruptedException {
+  private void changeOtpPassword(String newPassword, User id, Long otp) throws InterruptedException {
     Thread thread = new Thread(() -> userRepository.setNewPassword(newPassword, id.getId()));
     thread.start();
     thread.join();
-    Thread thread1 = new Thread(() -> otpRepository.setExpiredTime(Date.from(Instant.now().plusMillis(-700000))));
+    Thread thread1 = new Thread(() -> otpRepository.setExpiredTime(Date.from(Instant.now().plusMillis(-700000)), otp));
     thread1.start();
   }
 
@@ -170,11 +170,13 @@ public class PasswordResetImpl implements PasswordReset{
       return "Invalid Token";
     }
     Optional<User> user = Optional.ofNullable(passwordResetTokenRepository.findByToken(token).getUser());
+    PasswordResetToken passwordResetToken
+            = passwordResetTokenRepository.findByToken(token);
     if(user.isPresent()){
       Matcher matcher = Pattern.compile(regex).matcher(password.getNewPassword());
       if (matcher.find()){
         try {
-          changeTokenPassword(encoder.encode(password.getNewPassword()), user.get());
+          changeTokenPassword(encoder.encode(password.getNewPassword()), user.get(), passwordResetToken.getId());
         } catch (InterruptedException e) {
           System.out.println(Arrays.toString(e.getStackTrace()));
         }
@@ -194,11 +196,12 @@ public class PasswordResetImpl implements PasswordReset{
       return "Invalid OTP";
     }
     Optional<User> user = Optional.ofNullable(otpRepository.findByOtp(otp).getUser());
+    Otp otpCode = otpRepository.findByOtp(otp);
     if(user.isPresent()){
       Matcher matcher = Pattern.compile(regex).matcher(password.getNewPassword());
       if(matcher.find()){
         try {
-          changeOtpPassword(encoder.encode(password.getNewPassword()), user.get());
+          changeOtpPassword(encoder.encode(password.getNewPassword()), user.get(), otpCode.getId());
         } catch (InterruptedException e) {
           System.out.println(Arrays.toString(e.getStackTrace()));
         }

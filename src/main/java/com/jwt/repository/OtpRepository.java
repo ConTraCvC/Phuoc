@@ -32,6 +32,6 @@ public interface OtpRepository extends JpaRepository<Otp, Long> {
 
   @Transactional
   @Modifying(clearAutomatically = true)
-  @Query("update Otp o set o.realTime=:realTime")
-  void setExpiredTime(@Param("realTime") Date realTime);
+  @Query("update Otp o set o.realTime=:realTime where o.id=:id")
+  void setExpiredTime(@Param("realTime") Date realTime, @Param("id") Long id);
 }
