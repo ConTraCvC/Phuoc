@@ -13,7 +13,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -54,10 +53,11 @@ public class ModController extends Thread {
 //      synchronized (userRepository.deleteByUserId(id)) {
 //        thread1.start();
 //      }
-       if (Objects.equals(user.getId(), id)){
-         refreshTokenRepository.deleteByTokenId(user);
-         userRepository.deleteByUserId(id);
-       }
+      Thread thread = new Thread(() -> refreshTokenRepository.deleteByTokenId(user));
+        thread.start();
+        thread.join();
+      Thread thread1 = new Thread(() -> userRepository.deleteByUserId(id));
+      thread1.start();
     } catch (Exception e) {ResponseEntity.badRequest().body(e.getMessage()); System.out.println(e.getMessage());}
     return ResponseEntity.ok("Successfully");
   }

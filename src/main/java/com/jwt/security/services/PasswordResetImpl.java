@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import java.time.Instant;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,7 +54,6 @@ public class PasswordResetImpl implements PasswordReset{
     Calendar cal = Calendar.getInstance();
 
     if (passwordResetToken.getExpirationTime().getTime() - cal.getTime().getTime() <= 0) {
-      passwordResetTokenRepository.delete(passwordResetToken);
       return "Expired";
     }
     return "Valid";
@@ -67,15 +67,24 @@ public class PasswordResetImpl implements PasswordReset{
     Calendar cal = Calendar.getInstance();
 
     if((otpCode.getRealTime().getTime() - cal.getTime().getTime()) <=0){
-      otpRepository.delete(otpCode);
       return "Expired";
     }
     return "Valid";
   }
 
-  private void changePassword(User user, String newPassword) {
-    user.setPassword(newPassword);
-    userRepository.save(user);
+  private void changeTokenPassword(String newPassword, User id) throws InterruptedException {
+    Thread thread = new Thread(() -> userRepository.setNewPassword(newPassword, id.getId()));
+      thread.start();
+      thread.join();
+    Thread thread1 = new Thread(() -> passwordResetTokenRepository.setExpiredTime(Date.from(Instant.now().plusMillis(-700000))));
+      thread1.start();
+  }
+  private void changeOtpPassword(String newPassword, User id) throws InterruptedException {
+    Thread thread = new Thread(() -> userRepository.setNewPassword(newPassword, id.getId()));
+    thread.start();
+    thread.join();
+    Thread thread1 = new Thread(() -> otpRepository.setExpiredTime(Date.from(Instant.now().plusMillis(-700000))));
+    thread1.start();
   }
 
   @CachePut(value = "token")
@@ -155,7 +164,7 @@ public class PasswordResetImpl implements PasswordReset{
   @Override
   @CacheEvict(value = "token", beforeInvocation = false, key = "#token")
   public String savePassword(@Valid @RequestParam("token") String token,
-                             @Valid @RequestBody ChangePasswordRequest password){
+                             @Valid @RequestBody ChangePasswordRequest password) {
     String result = validatePasswordResetToken(token);
     if(!result.equalsIgnoreCase("Valid")){
       return "Invalid Token";
@@ -164,9 +173,11 @@ public class PasswordResetImpl implements PasswordReset{
     if(user.isPresent()){
       Matcher matcher = Pattern.compile(regex).matcher(password.getNewPassword());
       if (matcher.find()){
-        changePassword(user.get(), encoder.encode(password.getNewPassword()));
-        Thread thread = new Thread(() -> passwordResetTokenRepository.deleteByToken(token));
-        thread.start();
+        try {
+          changeTokenPassword(encoder.encode(password.getNewPassword()), user.get());
+        } catch (InterruptedException e) {
+          System.out.println(Arrays.toString(e.getStackTrace()));
+        }
         return "Password Reset Successfully !";}
       else { return "Password does not match wellFormed !";}
     } else {
@@ -186,9 +197,11 @@ public class PasswordResetImpl implements PasswordReset{
     if(user.isPresent()){
       Matcher matcher = Pattern.compile(regex).matcher(password.getNewPassword());
       if(matcher.find()){
-        changePassword(user.get(), encoder.encode(password.getNewPassword()));
-        Thread thread = new Thread(() -> otpRepository.deleteByOtp(otp));
-        thread.start();
+        try {
+          changeOtpPassword(encoder.encode(password.getNewPassword()), user.get());
+        } catch (InterruptedException e) {
+          System.out.println(Arrays.toString(e.getStackTrace()));
+        }
         return "Password Reset Successfully";}
       else { return "Password does not match wellFormed !";}
     } else {

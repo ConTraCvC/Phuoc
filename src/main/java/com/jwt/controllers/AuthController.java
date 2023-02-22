@@ -47,7 +47,7 @@ public class AuthController {
 
   @PostMapping("/savePassword")
   ResponseEntity<String> savePassword(@RequestParam("token") String token,
-                                             @RequestBody ChangePasswordRequest savePassword) {
+                                      @RequestBody ChangePasswordRequest savePassword) throws InterruptedException {
     return ResponseEntity.ok(passwordReset.savePassword(token, savePassword));
   }
 

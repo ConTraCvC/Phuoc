@@ -13,10 +13,10 @@ public interface PasswordReset {
   ResponseEntity<?> resetPassword(@RequestBody ChangePasswordRequest passwordModel, HttpServletRequest request, PasswordResetToken resetToken);
 
   String savePassword(@RequestParam("token") String token,
-                      @RequestBody ChangePasswordRequest password);
+                      @RequestBody ChangePasswordRequest password) throws InterruptedException;
 
   String saveOtpPassword(@RequestParam("otp") int otp,
-                         @RequestBody ChangePasswordRequest password);
+                         @RequestBody ChangePasswordRequest password) throws InterruptedException;
 
   ResponseEntity<?> resetPasswordOTP(@RequestBody ChangePasswordRequest password);
 

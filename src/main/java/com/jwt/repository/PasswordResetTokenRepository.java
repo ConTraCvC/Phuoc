@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.Date;
 
 @Repository
 public interface PasswordResetTokenRepository extends JpaRepository<PasswordResetToken, Long> {
@@ -28,4 +29,9 @@ public interface PasswordResetTokenRepository extends JpaRepository<PasswordRese
   // delete all except the newest one group by user_id.
   @Query(value = "delete from password_reset_token where user_id and id not in (select * from (select max(id) as id from password_reset_token group by user_id) as t2)", nativeQuery = true)
   void deleteAll();
+
+  @Transactional
+  @Modifying(clearAutomatically = true)
+  @Query("update PasswordResetToken p set p.expirationTime=:expirationTime")
+  void setExpiredTime(@Param("expirationTime") Date expirationTime);
 }

@@ -19,6 +19,4 @@ public interface AccountControl {
 
   String changePassword(@Valid @RequestBody ChangePasswordRequest changePassword);
 
-  void waitForBarrier();
-
 }

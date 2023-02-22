@@ -39,4 +39,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
   @EntityGraph("roleJoin")
   @Query("select u from User u")
   List<User> findAllUser();
+
+  @Modifying(flushAutomatically = true)
+  @Query("update User u set u.password=:password where u.id=:id")
+  void setNewPassword(@Param("password") String newPassword, @Param("id") Long id);
 }

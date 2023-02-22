@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.Date;
 
 @Repository
 public interface OtpRepository extends JpaRepository<Otp, Long> {
@@ -28,4 +29,9 @@ public interface OtpRepository extends JpaRepository<Otp, Long> {
   // delete all except the newest one group by user_id.
   @Query(value = "delete from otp where user_id and id not in (select * from (select max(id) as id from otp group by user_id) as t2)", nativeQuery = true)
   void deleteAllOtp();
+
+  @Transactional
+  @Modifying(clearAutomatically = true)
+  @Query("update Otp o set o.realTime=:realTime")
+  void setExpiredTime(@Param("realTime") Date realTime);
 }
