@@ -105,7 +105,7 @@ public class AccountControlImpl implements AccountControl {
     if (users.isPresent()){
       return ResponseEntity
               .badRequest()
-              .body(new MessageResponse("Error: Username or email is already in use!"));
+              .body(new MessageResponse("Error: Username or email is already taken!"));
     }
 
     // Create new user's account
