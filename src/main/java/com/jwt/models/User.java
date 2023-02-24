@@ -49,9 +49,4 @@ public class User {
     this.password = password;
   }
 
-  void SignupRequest(String username, String email, String password) {
-    this.username = username;
-    this.email = email;
-    this.password = password;
-  }
 }
