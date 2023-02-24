@@ -15,6 +15,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -86,40 +87,42 @@ public class PasswordResetImpl implements PasswordReset{
     thread1.start();
   }
 
-  @CachePut(value = "token")
-  public void createPasswordResetTokenForUser(User user, String rsToken) {
-    PasswordResetToken passwordResetToken
-            = new PasswordResetToken(rsToken, user);
-    passwordResetTokenRepository.save(passwordResetToken);
+  @CachePut(value = "otp")
+  public PasswordResetToken createPasswordResetTokenForUser(Long userId) {
+    PasswordResetToken token = new PasswordResetToken();
+    token.setUser(userRepository.findById(userId).isPresent() ? userRepository.findById(userId).get() : null);
+    token.setExpirationTime(Date.from(Instant.now().plusMillis(600000)));
+    token.setToken(UUID.randomUUID().toString());
+    return token;
   }
 
   @Override
-  public ResponseEntity<?> resetPassword(@RequestBody ChangePasswordRequest password, HttpServletRequest request) {
+  public ResponseEntity<?> resetPassword(@RequestBody ChangePasswordRequest password, HttpServletRequest request, PasswordResetToken tokenRS) {
     Optional<User> user = userRepository.findByEmail(password.getEmail());
     if (user.isPresent()) {
-      String token = UUID.randomUUID().toString();
-      Thread thread = new Thread(() -> createPasswordResetTokenForUser(user.get(), token));
-      thread.start();
+      Optional<PasswordResetToken> token = passwordResetTokenRepository.findByUserId(user.get().getId());
+      String tokenCode = UUID.randomUUID().toString();
       try {
-        thread.join();
-      } catch (InterruptedException e) {
-        System.out.println(Arrays.toString(e.getStackTrace()));
+        if(token.isPresent()){
+          passwordResetTokenRepository.updateToken(tokenCode, Date.from(Instant.now().plusMillis(600000)), user.get().getId());
+        } else {
+          passwordResetTokenRepository.save(createPasswordResetTokenForUser(user.get().getId()));
+        }
+        return ResponseEntity.ok("Successfully");
+      } catch (Exception e) {
+        return ResponseEntity.badRequest().body("Set resetToken failed");
       }
-      passwordResetTokenMail(applicationUrl(request), token);
-      Thread thread1 = new Thread(passwordResetTokenRepository::deleteAll);
-      thread1.start();
-      applicationUrl(request);
-//        SimpleMailMessage message = new SimpleMailMessage();
-//        try {
-//          message.setTo(password.getEmail());
-//          message.setSubject("Limited time to 10 minutes. Click the link to Reset your Password: ");
-//          message.setText("Hi, User.\n Forgot password?\n Here is the link to reset your password\n" + passwordResetTokenMail(applicationUrl(request), token) + "\nGood luck!");
-//          mailSender.send(message);
-//        } catch (Exception e) {
-//          return ResponseEntity.badRequest().body("Invalid email address or mail server");
-//        }
-      return ResponseEntity.ok(token);
     }
+//    SimpleMailMessage message = new SimpleMailMessage();
+//    try {
+//      message.setTo(password.getEmail());
+//      message.setSubject("Limited time to 10 minutes. Click the link to Reset your Password: ");
+//      message.setText("Hi, User.\n Forgot password?\n Here is the link to reset your password\n"
+//              + passwordResetTokenMail(applicationUrl(request), tokenRS.getToken()) + "\nGood luck!");
+//      mailSender.send(message);
+//    } catch (Exception e) {
+//      return ResponseEntity.badRequest().body("Invalid email address or mail server");
+//    }
     return ResponseEntity.badRequest().body("Wrong email address !");
   }
 
@@ -156,14 +159,14 @@ public class PasswordResetImpl implements PasswordReset{
   }
 
   @Override
-  public ResponseEntity<?> resetPasswordOTP(ChangePasswordRequest password) {
+  public ResponseEntity<?> resetPasswordOTP(ChangePasswordRequest password, Otp otpCodex) {
     Twilio.init("AC428df5bd302a88e1e314d9ece0159181", "d60b5c6548496920f5d27bb9d2220bac");
     Optional<User> user = userRepository.findByEmail(password.getEmail());
     if(user.isPresent()) {
       Optional<Otp> otp = otpRepository.findByUserId(user.get().getId());
       int otpCode = 100000 + new Random().nextInt(888888);
       try {
-        if(otp.isPresent()) {
+        if (otp.isPresent()) {
           otpRepository.updateOtp(otpCode, Date.from(Instant.now().plusMillis(600000)), user.get().getId());
         } else {
           otpRepository.save(createOtpToken(user.get().getId()));
@@ -173,13 +176,13 @@ public class PasswordResetImpl implements PasswordReset{
         return ResponseEntity.badRequest().body("Set OtpToken failed");
       }
     }
-//    try {
-//      Message.creator(new PhoneNumber("+84866682422"),
-//              new PhoneNumber("+19497495157"),
-//              "Limited reset OTP code for 10 minutes: " + otpCode).create();
-//    } catch (Exception e) {
-//      return ResponseEntity.badRequest().body("Send SMS failed");
-//    }
+    try {
+      Message.creator(new PhoneNumber("+84866682422"),
+              new PhoneNumber("+19497495157"),
+              "Limited reset OTP code for 10 minutes: " + otpCodex.getOtp()).create();
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body("Send SMS failed");
+    }
     return ResponseEntity.badRequest().body("Wrong email address");
   }
 

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
 import java.util.Date;
+import java.util.Optional;
 
 @Repository
 public interface PasswordResetTokenRepository extends JpaRepository<PasswordResetToken, Long> {
@@ -19,19 +20,21 @@ public interface PasswordResetTokenRepository extends JpaRepository<PasswordRese
   @Cacheable("token")
   PasswordResetToken findByToken(String token);
 
-  @Transactional
-  @Modifying(clearAutomatically = true)
-  @Query("delete PasswordResetToken p where p.token=:token")
-  void deleteByToken(@Param("token") String token);
+  Optional<PasswordResetToken> findByUserId(Long id);
 
-  @Transactional
-  @Modifying(clearAutomatically = true)
-  // delete all except the newest one group by user_id.
-  @Query(value = "delete from password_reset_token where user_id and id not in (select * from (select max(id) as id from password_reset_token group by user_id) as t2)", nativeQuery = true)
-  void deleteAll();
+//  @Transactional
+//  @Modifying(clearAutomatically = true)
+//  // delete all except the newest one group by user_id.
+//  @Query(value = "delete from password_reset_token where user_id and id not in (select * from (select max(id) as id from password_reset_token group by user_id) as t2)", nativeQuery = true)
+//  void deleteAll();
 
   @Transactional
   @Modifying(clearAutomatically = true)
   @Query("update PasswordResetToken p set p.expirationTime=:expirationTime where p.id=:id")
   void setExpiredTime(@Param("expirationTime") Date expirationTime, @Param("id") Long id);
+
+  @Transactional
+  @Modifying(clearAutomatically = true)
+  @Query(value = "update password_reset_token set token=:token, expiration_time=:expiration_time where user_id=:user_id", nativeQuery = true)
+  void updateToken(@Param("token") String token, @Param("real_time") Date date, @Param("user_id") Long id);
 }
