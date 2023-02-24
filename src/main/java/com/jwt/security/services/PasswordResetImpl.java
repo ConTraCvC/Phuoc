@@ -95,10 +95,10 @@ public class PasswordResetImpl implements PasswordReset{
 
   @Override
   public ResponseEntity<?> resetPassword(@RequestBody ChangePasswordRequest password, HttpServletRequest request) {
-    User user = userRepository.findByEmail(password.getEmail());
+    Optional<User> user = userRepository.findByEmail(password.getEmail());
     if (user != null) {
       String token = UUID.randomUUID().toString();
-      Thread thread = new Thread(() -> createPasswordResetTokenForUser(user, token));
+      Thread thread = new Thread(() -> createPasswordResetTokenForUser(user.get(), token));
       thread.start();
       try {
         thread.join();
@@ -158,17 +158,20 @@ public class PasswordResetImpl implements PasswordReset{
   @Override
   public ResponseEntity<?> resetPasswordOTP(ChangePasswordRequest password) {
     Twilio.init("AC428df5bd302a88e1e314d9ece0159181", "d60b5c6548496920f5d27bb9d2220bac");
-    User user = userRepository.findByEmail(password.getEmail());
-    Optional<Otp> otp = otpRepository.findByUserId(user.getId());
-    int otpCode = 100000 + new Random().nextInt(888888);
-    try {
-      if(otp.isPresent()) {
-        otpRepository.updateOtp(otpCode, Date.from(Instant.now().plusMillis(600000)), user.getId());
-      } else {
-        otpRepository.save(createOtpToken(user.getId()));
+    Optional<User> user = userRepository.findByEmail(password.getEmail());
+    if(user.isPresent()) {
+      Optional<Otp> otp = otpRepository.findByUserId(user.get().getId());
+      int otpCode = 100000 + new Random().nextInt(888888);
+      try {
+        if(otp.isPresent()) {
+          otpRepository.updateOtp(otpCode, Date.from(Instant.now().plusMillis(600000)), user.get().getId());
+        } else {
+          otpRepository.save(createOtpToken(user.get().getId()));
+        }
+        return ResponseEntity.ok("Successfully");
+      } catch (Exception e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
       }
-    } catch (Exception e) {
-      return ResponseEntity.badRequest().body("Create OtpToken failed");
     }
 //    try {
 //      Message.creator(new PhoneNumber("+84866682422"),
@@ -177,7 +180,7 @@ public class PasswordResetImpl implements PasswordReset{
 //    } catch (Exception e) {
 //      return ResponseEntity.badRequest().body("Send SMS failed");
 //    }
-    return ResponseEntity.ok("OTP Send Successfully");
+    return ResponseEntity.badRequest().body("Wrong email address");
   }
 
   @Override

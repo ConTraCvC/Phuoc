@@ -95,7 +95,7 @@ public class AccountControlImpl implements AccountControl {
   @Override
   public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
 
-    Optional<User> users = Optional.ofNullable(userRepository.findByEmail(signUpRequest.getEmail()));
+    Optional<User> users = userRepository.findByEmail(signUpRequest.getEmail());
     if (users.isPresent()){
       return ResponseEntity
               .badRequest()
@@ -140,11 +140,11 @@ public class AccountControlImpl implements AccountControl {
 
   @Override
   public String changePassword(@Valid @RequestBody ChangePasswordRequest changePassword){
-    User user = userRepository.findByEmail(changePassword.getEmail());
+    Optional<User> user = userRepository.findByEmail(changePassword.getEmail());
     if (user == null) {
       return "Username not existed";
     }
-    if(!bCryptPasswordEncoder.matches(changePassword.getOldPassword(), user.getPassword())){
+    if(!bCryptPasswordEncoder.matches(changePassword.getOldPassword(), user.get().getPassword())){
       return "Invalid Old Password";
     }
     userRepository.changePassword(encoder.encode(changePassword.getNewPassword()), changePassword.getEmail());
