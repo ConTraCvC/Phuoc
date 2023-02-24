@@ -3,6 +3,7 @@ package com.jwt.controllers;
 import com.jwt.models.Otp;
 import com.jwt.models.User;
 import com.jwt.payload.request.ChangePasswordRequest;
+import com.jwt.repository.OtpRepository;
 import com.jwt.repository.RefreshTokenRepository;
 import com.jwt.repository.UserRepository;
 import com.jwt.security.services.PasswordResetImpl;
@@ -12,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +24,7 @@ public class ModController extends Thread {
   private final UserRepository userRepository;
   private final PasswordResetImpl passwordReset;
   private final RefreshTokenRepository refreshTokenRepository;
+  private final OtpRepository otpRepository;
 
   @GetMapping("/mod")
   @PreAuthorize("hasRole('MODERATOR') || hasRole('ADMIN')")

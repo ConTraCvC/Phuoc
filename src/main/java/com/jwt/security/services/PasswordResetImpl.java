@@ -87,26 +87,21 @@ public class PasswordResetImpl implements PasswordReset{
     thread1.start();
   }
 
-  @CachePut(value = "token")
-  public PasswordResetToken createPasswordResetTokenForUser(Long userId) {
-    PasswordResetToken token = new PasswordResetToken();
-    token.setUser(userRepository.findById(userId).isPresent() ? userRepository.findById(userId).get() : null);
-    token.setExpirationTime(Date.from(Instant.now().plusMillis(600000)));
-    token.setToken(UUID.randomUUID().toString());
-    return token;
-  }
-
   @Override
+  @CachePut(value = "token")
   public ResponseEntity<?> resetPassword(@RequestBody ChangePasswordRequest password, HttpServletRequest request, PasswordResetToken tokenRS) {
     Optional<User> user = userRepository.findByEmail(password.getEmail());
+    String tokenCode = UUID.randomUUID().toString();
     if (user.isPresent()) {
       Optional<PasswordResetToken> token = passwordResetTokenRepository.findByUserId(user.get().getId());
-      String tokenCode = UUID.randomUUID().toString();
       try {
         if(token.isPresent()){
           passwordResetTokenRepository.updateToken(tokenCode, Date.from(Instant.now().plusMillis(600000)), user.get().getId());
         } else {
-          passwordResetTokenRepository.save(createPasswordResetTokenForUser(user.get().getId()));
+          tokenRS.setUser(user.get());
+          tokenRS.setExpirationTime(Date.from(Instant.now().plusMillis(600000)));
+          tokenRS.setToken(tokenCode);
+          passwordResetTokenRepository.save(tokenRS);
         }
         passwordResetTokenMail(applicationUrl(request), tokenCode);
         applicationUrl(request);
@@ -120,7 +115,7 @@ public class PasswordResetImpl implements PasswordReset{
 //      message.setTo(password.getEmail());
 //      message.setSubject("Limited time to 10 minutes. Click the link to Reset your Password: ");
 //      message.setText("Hi, User.\n Forgot password?\n Here is the link to reset your password\n"
-//              + passwordResetTokenMail(applicationUrl(request), tokenRS.getToken()) + "\nGood luck!");
+//              + passwordResetTokenMail(applicationUrl(request), tokenCode) + "\nGood luck!");
 //      mailSender.send(message);
 //    } catch (Exception e) {
 //      return ResponseEntity.badRequest().body("Invalid email address or mail server");
@@ -156,9 +151,9 @@ public class PasswordResetImpl implements PasswordReset{
   public ResponseEntity<?> resetPasswordOTP(ChangePasswordRequest password, Otp otpCodex) {
     Twilio.init("AC428df5bd302a88e1e314d9ece0159181", "f85809bb54f256fee337feaa79a8c4b1");
     Optional<User> user = userRepository.findByEmail(password.getEmail());
+    int otpCode = 100000 + new Random().nextInt(888888);
     if(user.isPresent()) {
       Optional<Otp> otp = otpRepository.findByUserId(user.get().getId());
-      int otpCode = 100000 + new Random().nextInt(888888);
       try {
         if (otp.isPresent()) {
           otpRepository.updateOtp(otpCode, Date.from(Instant.now().plusMillis(600000)), user.get().getId());
