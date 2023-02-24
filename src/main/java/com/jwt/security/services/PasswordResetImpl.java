@@ -4,7 +4,6 @@ import com.jwt.models.PasswordResetToken;
 import com.jwt.models.User;
 import com.jwt.payload.request.ChangePasswordRequest;
 import com.jwt.models.Otp;
-import com.jwt.payload.response.ResetPasswordResponse;
 import com.jwt.repository.OtpRepository;
 import com.jwt.repository.PasswordResetTokenRepository;
 import com.jwt.repository.UserRepository;
@@ -120,7 +119,7 @@ public class PasswordResetImpl implements PasswordReset{
 //        } catch (Exception e) {
 //          return ResponseEntity.badRequest().body("Invalid email address or mail server");
 //        }
-      return ResponseEntity.ok(new ResetPasswordResponse(token));
+      return ResponseEntity.ok(token);
     }
     return ResponseEntity.badRequest().body("Wrong email address !");
   }
