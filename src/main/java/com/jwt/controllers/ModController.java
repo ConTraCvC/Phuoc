@@ -4,7 +4,6 @@ import com.jwt.models.User;
 import com.jwt.payload.request.ChangePasswordRequest;
 import com.jwt.repository.RefreshTokenRepository;
 import com.jwt.repository.UserRepository;
-import com.jwt.security.services.AccountControl;
 import com.jwt.security.services.PasswordResetImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,7 +22,6 @@ public class ModController extends Thread {
   private final UserRepository userRepository;
   private final PasswordResetImpl passwordReset;
   private final RefreshTokenRepository refreshTokenRepository;
-  private final AccountControl accountControl;
 
   @GetMapping("/mod")
   @PreAuthorize("hasRole('MODERATOR') || hasRole('ADMIN')")
