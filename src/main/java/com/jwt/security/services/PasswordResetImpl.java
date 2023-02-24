@@ -170,7 +170,7 @@ public class PasswordResetImpl implements PasswordReset{
         }
         return ResponseEntity.ok("Successfully");
       } catch (Exception e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+        return ResponseEntity.badRequest().body("Set OtpToken failed");
       }
     }
 //    try {
