@@ -178,13 +178,13 @@ public class PasswordResetImpl implements PasswordReset{
         return ResponseEntity.badRequest().body("Set OtpToken failed");
       }
     }
-    try {
-      Message.creator(new PhoneNumber("+84866682422"),
-              new PhoneNumber("+19497495157"),
-              "Limited reset OTP code for 10 minutes: " + otpCodex.getOtp()).create();
-    } catch (Exception e) {
-      return ResponseEntity.badRequest().body("Send SMS failed");
-    }
+//    try {
+//      Message.creator(new PhoneNumber("+84866682422"),
+//              new PhoneNumber("+19497495157"),
+//              "Limited reset OTP code for 10 minutes: " + otpCodex.getOtp()).create();
+//    } catch (Exception e) {
+//      return ResponseEntity.badRequest().body("Send SMS failed");
+//    }
     return ResponseEntity.badRequest().body("Wrong email address");
   }
 
