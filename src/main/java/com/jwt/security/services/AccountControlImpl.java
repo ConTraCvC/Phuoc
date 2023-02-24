@@ -4,7 +4,6 @@ import com.jwt.exception.TokenRefreshException;
 import com.jwt.models.*;
 import com.jwt.payload.request.*;
 import com.jwt.payload.response.JwtResponse;
-import com.jwt.payload.response.MessageResponse;
 import com.jwt.payload.response.RefreshTokenResponse;
 import com.jwt.payload.response.UserResponse;
 import com.jwt.repository.*;
@@ -100,7 +99,7 @@ public class AccountControlImpl implements AccountControl {
     if (users.isPresent()){
       return ResponseEntity
               .badRequest()
-              .body(new MessageResponse("Error: Username or email is already taken!"));
+              .body("Error: Username or email is already taken!");
     }
 
     // Create new user's account
