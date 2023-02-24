@@ -108,7 +108,9 @@ public class PasswordResetImpl implements PasswordReset{
         } else {
           passwordResetTokenRepository.save(createPasswordResetTokenForUser(user.get().getId()));
         }
-        return ResponseEntity.ok("Successfully");
+        passwordResetTokenMail(applicationUrl(request), tokenCode);
+        applicationUrl(request);
+        return ResponseEntity.ok(tokenCode);
       } catch (Exception e) {
         return ResponseEntity.badRequest().body("Set resetToken failed");
       }
