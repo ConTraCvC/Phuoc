@@ -87,7 +87,7 @@ public class PasswordResetImpl implements PasswordReset{
     thread1.start();
   }
 
-  @CachePut(value = "otp")
+  @CachePut(value = "token")
   public PasswordResetToken createPasswordResetTokenForUser(Long userId) {
     PasswordResetToken token = new PasswordResetToken();
     token.setUser(userRepository.findById(userId).isPresent() ? userRepository.findById(userId).get() : null);
