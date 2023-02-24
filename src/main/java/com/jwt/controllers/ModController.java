@@ -48,7 +48,7 @@ public class ModController extends Thread {
         thread.join();
       Thread thread1 = new Thread(() -> userRepository.deleteByUserId(id));
       thread1.start();
-    } catch (Exception e) {ResponseEntity.badRequest().body(e.getMessage()); System.out.println(e.getMessage());}
+    } catch (Exception e) {ResponseEntity.badRequest().body(e.getMessage());}
     return ResponseEntity.ok("Successfully");
   }
 
