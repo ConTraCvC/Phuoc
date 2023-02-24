@@ -20,21 +20,10 @@ public interface OtpRepository extends JpaRepository<Otp, Long> {
   @Cacheable("otp")
   Otp findByOtp(int otp);
 
-  Optional<Otp> findByUserId(Long id);
-
-//  @Transactional
-//  @Modifying(clearAutomatically = true)
-//  // delete all except the newest one group by user_id.
-//  @Query(value = "delete from otp where user_id and id not in (select * from (select max(id) as id from otp group by user_id) as t2)", nativeQuery = true)
-//  void deleteAllOtp();
-
   @Transactional
   @Modifying(clearAutomatically = true)
-  @Query("update Otp o set o.realTime=:realTime where o.id=:id")
-  void setExpiredTime(@Param("realTime") Date realTime, @Param("id") Long id);
+  // delete all except the newest one group by user_id.
+  @Query(value = "delete from otp where user_id and id not in (select * from (select max(id) as id from otp group by user_id) as t2)", nativeQuery = true)
+  void deleteAllOtp();
 
-  @Transactional
-  @Modifying(clearAutomatically = true)
-  @Query(value = "update otp set otp=:otp, real_time=:real_time where user_id=:user_id", nativeQuery = true)
-  void updateOtp(@Param("otp") int otp, @Param("real_time") Date date, @Param("user_id") Long id);
 }

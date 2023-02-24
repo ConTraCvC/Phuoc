@@ -1,8 +1,6 @@
 package com.jwt.security.services;
 
-import com.jwt.models.Otp;
 import com.jwt.models.PasswordResetToken;
-import com.jwt.models.User;
 import com.jwt.payload.request.ChangePasswordRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +18,6 @@ public interface PasswordReset {
   String saveOtpPassword(@RequestParam("otp") int otp,
                          @RequestBody ChangePasswordRequest password) throws InterruptedException;
 
-  ResponseEntity<?> resetPasswordOTP(@RequestBody ChangePasswordRequest password, Otp otpCodex);
+  ResponseEntity<?> resetPasswordOTP(@RequestBody ChangePasswordRequest password);
 
 }

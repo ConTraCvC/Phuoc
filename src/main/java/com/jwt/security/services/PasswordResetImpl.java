@@ -67,24 +67,15 @@ public class PasswordResetImpl implements PasswordReset{
     Calendar cal = Calendar.getInstance();
 
     if((otpCode.getRealTime().getTime() - cal.getTime().getTime()) <=0){
+      otpRepository.delete(otpCode);
       return "Expired";
     }
     return "Valid";
   }
 
-  private void changeTokenPassword(String newPassword, User id, Long token) throws InterruptedException {
-    Thread thread = new Thread(() -> userRepository.setNewPassword(newPassword, id.getId()));
-      thread.start();
-      thread.join();
-    Thread thread1 = new Thread(() -> passwordResetTokenRepository.setExpiredTime(Date.from(Instant.now().plusMillis(-700000)), token));
-      thread1.start();
-  }
-  private void changeOtpPassword(String newPassword, User id, Long otp) throws InterruptedException {
-    Thread thread = new Thread(() -> userRepository.setNewPassword(newPassword, id.getId()));
-    thread.start();
-    thread.join();
-    Thread thread1 = new Thread(() -> otpRepository.setExpiredTime(Date.from(Instant.now().plusMillis(-700000)), otp));
-    thread1.start();
+  private void changePassword(User user, String newPassword) {
+    user.setPassword(newPassword);
+    userRepository.save(user);
   }
 
   @Override
@@ -146,41 +137,34 @@ public class PasswordResetImpl implements PasswordReset{
 //            request.getContextPath();
 //  }
 
+  @CachePut(value = "otp")
+  public void createPasswordResetOtp(User user, int otp) {
+    Otp otpCode = new Otp(user, otp);
+    otpRepository.save(otpCode);
+  }
+
   @Override
-  @CachePut("otp")
-  public ResponseEntity<?> resetPasswordOTP(ChangePasswordRequest password, Otp otpCodex) {
-    Twilio.init("AC428df5bd302a88e1e314d9ece0159181", "f85809bb54f256fee337feaa79a8c4b1");
+  public ResponseEntity<?> resetPasswordOTP(ChangePasswordRequest password) {
+    Twilio.init("AC428df5bd302a88e1e314d9ece0159181", "d60b5c6548496920f5d27bb9d2220bac");
     Optional<User> user = userRepository.findByEmail(password.getEmail());
     int otpCode = 100000 + new Random().nextInt(888888);
-    if(user.isPresent()) {
-      Optional<Otp> otp = otpRepository.findByUserId(user.get().getId());
-      try {
-        if (otp.isPresent()) {
-          otpRepository.updateOtp(otpCode, Date.from(Instant.now().plusMillis(600000)), user.get().getId());
-        } else {
-          otpCodex.setUser(user.get());
-          otpCodex.setRealTime(Date.from(Instant.now().plusMillis(600000)));
-          otpCodex.setOtp(otpCode);
-          try {
-            otpRepository.save(otpCodex);
-          } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Something went wrong try again later");
-          }
-        }
-//        Twilio.init("AC428df5bd302a88e1e314d9ece0159181", "67317da33ec54c86c70e7f73b8dcac1c");
-//        try {
-//          Message.creator(new PhoneNumber("+84866682422"),
-//                  new PhoneNumber("+19497495157"),
-//                  "Limited reset OTP code for 10 minutes: " + otpCode).create();
-//        } catch (Exception e) {
-//          return ResponseEntity.badRequest().body("Send SMS failed");
-//        }
-        return ResponseEntity.ok("Successfully: " + otpCode);
-      } catch (Exception e) {
-        return ResponseEntity.badRequest().body("Set OtpToken failed");
-      }
+    Thread thread = new Thread(() -> createPasswordResetOtp(user.get(), otpCode));
+      thread.start();
+    try {
+      thread.join();
+    } catch (InterruptedException e) {
+      System.out.println(Arrays.toString(e.getStackTrace()));
     }
-    return ResponseEntity.badRequest().body("Wrong email address");
+    Thread thread1 = new Thread(otpRepository::deleteAllOtp);
+      thread1.start();
+//    try {
+//      Message.creator(new PhoneNumber("+84866682422"),
+//              new PhoneNumber("+19497495157"),
+//              "Limited reset OTP code for 10 minutes: " + otpCode).create();
+//    } catch (Exception e) {
+//      return ResponseEntity.badRequest().body("Send SMS failed");
+//    }
+    return ResponseEntity.ok("OTP Send Successfully: " + otpCode);
   }
 
   @Override
@@ -192,17 +176,10 @@ public class PasswordResetImpl implements PasswordReset{
       return "Invalid Token";
     }
     Optional<User> user = Optional.ofNullable(passwordResetTokenRepository.findByToken(token).getUser());
-    PasswordResetToken passwordResetToken
-            = passwordResetTokenRepository.findByToken(token);
     if(user.isPresent()){
       Matcher matcher = Pattern.compile(regex).matcher(password.getNewPassword());
       if (matcher.find()){
-        try {
-          changeTokenPassword(encoder.encode(password.getNewPassword()), user.get(), passwordResetToken.getId());
-        } catch (InterruptedException e) {
-          System.out.println(Arrays.toString(e.getStackTrace()));
-          return "Something went wrong!";
-        }
+        changePassword(user.get(), encoder.encode(password.getNewPassword()));
         return "Password Reset Successfully !";}
       else { return "Password does not match wellFormed !";}
     } else {
@@ -224,11 +201,12 @@ public class PasswordResetImpl implements PasswordReset{
       Matcher matcher = Pattern.compile(regex).matcher(password.getNewPassword());
       if(matcher.find()){
         try {
-          changeOtpPassword(encoder.encode(password.getNewPassword()), user.get(), otpCode.getId());
-        } catch (InterruptedException e) {
-          System.out.println(Arrays.toString(e.getStackTrace()));
-          return "Something went wrong!";
+          changePassword(user.get(), encoder.encode(password.getNewPassword()));
+        } catch (Exception e) {
+          otpRepository.delete(otpCode);
+          return "Reset password failed";
         }
+        otpRepository.delete(otpCode);
         return "Password Reset Successfully";}
       else { return "Password does not match wellFormed !";}
     } else {

@@ -1,6 +1,5 @@
 package com.jwt.controllers;
 
-import com.jwt.models.Otp;
 import com.jwt.models.User;
 import com.jwt.payload.request.ChangePasswordRequest;
 import com.jwt.repository.OtpRepository;
@@ -54,8 +53,8 @@ public class ModController extends Thread {
   }
 
   @GetMapping(value = "/sendSMS")
-  ResponseEntity<?> resetPasswordOTP(@RequestBody ChangePasswordRequest password, Otp otpCodex) {
-    return ResponseEntity.ok(passwordReset.resetPasswordOTP(password, otpCodex));
+  ResponseEntity<?> resetPasswordOTP(@RequestBody ChangePasswordRequest password) {
+    return ResponseEntity.ok(passwordReset.resetPasswordOTP(password));
   }
 
 }
