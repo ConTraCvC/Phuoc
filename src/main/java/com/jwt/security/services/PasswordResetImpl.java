@@ -96,7 +96,7 @@ public class PasswordResetImpl implements PasswordReset{
   @Override
   public ResponseEntity<?> resetPassword(@RequestBody ChangePasswordRequest password, HttpServletRequest request) {
     Optional<User> user = userRepository.findByEmail(password.getEmail());
-    if (user != null) {
+    if (user.isPresent()) {
       String token = UUID.randomUUID().toString();
       Thread thread = new Thread(() -> createPasswordResetTokenForUser(user.get(), token));
       thread.start();
