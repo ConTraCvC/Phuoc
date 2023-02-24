@@ -164,7 +164,7 @@ public class PasswordResetImpl implements PasswordReset{
           otpRepository.updateOtp(otpCode, Date.from(Instant.now().plusMillis(600000)), user.get().getId());
         } else {
           otpCodex.setUser(user.get());
-          otpCodex.setRealTime(Date.from(Instant.now()));
+          otpCodex.setRealTime(Date.from(Instant.now().plusMillis(600000)));
           otpCodex.setOtp(otpCode);
           otpRepository.save(otpCodex);
         }
