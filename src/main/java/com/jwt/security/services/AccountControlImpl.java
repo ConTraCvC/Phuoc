@@ -44,7 +44,7 @@ public class AccountControlImpl implements AccountControl {
   private final RefreshTokenRepository refreshTokenRepository;
 
   @Override
-  public ResponseEntity<?> authenticateUser (@Valid @RequestBody User user) {
+  public ResponseEntity<?> authenticateUser (@Valid @RequestBody User user, HttpServletResponse response) {
     try {
       Authentication authentication = authenticationManager.authenticate(
               new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));

@@ -1,6 +1,7 @@
 package com.jwt.controllers;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import com.jwt.models.RefreshToken;
@@ -23,8 +24,8 @@ public class AuthController {
   private final PasswordReset passwordReset;
 
   @PostMapping("/sign-in")
-  ResponseEntity<?> authenticateUser(@Valid @RequestBody User user) {
-    return ResponseEntity.ok(accountControl.authenticateUser(user));
+  ResponseEntity<?> authenticateUser(@Valid @RequestBody User user, HttpServletResponse response) {
+    return ResponseEntity.ok(accountControl.authenticateUser(user, response));
   }
 
   @PostMapping("/sign-up")

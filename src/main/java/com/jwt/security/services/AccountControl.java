@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 public interface AccountControl {
-  ResponseEntity<?> authenticateUser(@Valid @RequestBody User user);
+  ResponseEntity<?> authenticateUser(@Valid @RequestBody User user, HttpServletResponse response);
 
   ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest);
 
