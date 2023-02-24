@@ -147,9 +147,6 @@ public class PasswordResetImpl implements PasswordReset{
 //  }
 
   @CachePut(value = "otp")
-  public void updatePasswordResetOtp(User user, int otp, Date date) {
-    otpRepository.updateOtp(otp, date, user.getId());
-  }
   public Otp createOtpToken(Long userId) {
     Otp otp = new Otp();
     otp.setUser(userRepository.findById(userId).isPresent() ? userRepository.findById(userId).get() : null);
@@ -164,10 +161,14 @@ public class PasswordResetImpl implements PasswordReset{
     User user = userRepository.findByEmail(password.getEmail());
     Optional<Otp> otp = otpRepository.findByUserId(user.getId());
     int otpCode = 100000 + new Random().nextInt(888888);
-    if(otp.isPresent()) {
-      otpRepository.updateOtp(otpCode, Date.from(Instant.now().plusMillis(600000)), user.getId());
-    } else {
-      otpRepository.save(createOtpToken(user.getId()));
+    try {
+      if(otp.isPresent()) {
+        otpRepository.updateOtp(otpCode, Date.from(Instant.now().plusMillis(600000)), user.getId());
+      } else {
+        otpRepository.save(createOtpToken(user.getId()));
+      }
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body("Create OtpToken failed");
     }
 //    try {
 //      Message.creator(new PhoneNumber("+84866682422"),
