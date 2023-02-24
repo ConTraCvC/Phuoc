@@ -141,7 +141,7 @@ public class AccountControlImpl implements AccountControl {
   @Override
   public String changePassword(@Valid @RequestBody ChangePasswordRequest changePassword){
     Optional<User> user = userRepository.findByEmail(changePassword.getEmail());
-    if (user == null) {
+    if (user.isEmpty()) {
       return "Username not existed";
     }
     if(!bCryptPasswordEncoder.matches(changePassword.getOldPassword(), user.get().getPassword())){
