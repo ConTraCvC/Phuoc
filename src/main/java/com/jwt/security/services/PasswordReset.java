@@ -1,6 +1,7 @@
 package com.jwt.security.services;
 
 import com.jwt.models.PasswordResetToken;
+import com.jwt.models.User;
 import com.jwt.payload.request.ChangePasswordRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
