@@ -1,5 +1,6 @@
 package com.jwt.models;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,7 +31,7 @@ public class User {
   @Size(max = 20)
   private String username;
 
-  @NotBlank
+  @JsonInclude(JsonInclude.Include.NON_NULL)
   @Size(max = 50)
   @Email
   private String email;

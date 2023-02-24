@@ -1,19 +1,17 @@
 package com.jwt.controllers;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import com.jwt.models.PasswordResetToken;
+import com.jwt.models.RefreshToken;
+import com.jwt.models.User;
 import com.jwt.payload.request.ChangePasswordRequest;
-import com.jwt.payload.request.RefreshTokenRequest;
 import com.jwt.security.services.AccountControl;
 import com.jwt.security.services.PasswordReset;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.jwt.payload.request.LoginRequest;
 import com.jwt.payload.request.SignupRequest;
 
 @RequiredArgsConstructor
@@ -25,8 +23,8 @@ public class AuthController {
   private final PasswordReset passwordReset;
 
   @PostMapping("/sign-in")
-  ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-    return ResponseEntity.ok(accountControl.authenticateUser(loginRequest, response));
+  ResponseEntity<?> authenticateUser(@Valid @RequestBody User user) {
+    return ResponseEntity.ok(accountControl.authenticateUser(user));
   }
 
   @PostMapping("/sign-up")
@@ -52,7 +50,7 @@ public class AuthController {
   }
 
   @PostMapping("/refreshToken")
-  ResponseEntity<?> refreshtoken(@Valid @RequestBody RefreshTokenRequest request) {
+  ResponseEntity<?> refreshtoken(@Valid @RequestBody RefreshToken request) {
     return ResponseEntity.ok(accountControl.refreshtoken(request));
   }
 

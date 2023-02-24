@@ -44,11 +44,10 @@ public class AccountControlImpl implements AccountControl {
   private final RefreshTokenRepository refreshTokenRepository;
 
   @Override
-  public ResponseEntity<?> authenticateUser (@Valid @RequestBody LoginRequest loginRequest,
-                                             HttpServletResponse response) {
+  public ResponseEntity<?> authenticateUser (@Valid @RequestBody User user) {
     try {
       Authentication authentication = authenticationManager.authenticate(
-              new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+              new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
 
       SecurityContextHolder.getContext().setAuthentication(authentication);
       String jwt = jwtUtils.generateJwtToken(authentication);
@@ -79,18 +78,16 @@ public class AccountControlImpl implements AccountControl {
   }
 
   @Override
-  public ResponseEntity<?> refreshtoken(@Valid @RequestBody RefreshTokenRequest request) {
+  public ResponseEntity<?> refreshtoken(@Valid @RequestBody RefreshToken request) {
     try{
-    String requestRefreshToken = request.getRefreshToken();
-
-    return refreshTokenRepository.findByToken(requestRefreshToken)
+    return refreshTokenRepository.findByToken(request.getToken())
             .map(refreshTokenService::verifyExpiration)
             .map(RefreshToken::getUser)
             .map(user -> {
               String token = jwtUtils.generateTokenFromUsername(user.getUsername());
-              return ResponseEntity.ok(new RefreshTokenResponse(token, requestRefreshToken));
+              return ResponseEntity.ok(new RefreshTokenResponse(token, request.getToken()));
             })
-            .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
+            .orElseThrow(() -> new TokenRefreshException(request.getToken(),
                     "Refresh token is not exists!"));
     } catch (Exception e) {System.out.println(e.getMessage());}
     return ResponseEntity.badRequest().body("Refresh token is not exists!");
