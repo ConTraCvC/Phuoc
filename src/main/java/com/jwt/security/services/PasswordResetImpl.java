@@ -171,7 +171,7 @@ public class PasswordResetImpl implements PasswordReset{
         } catch (Exception e) {
           return ResponseEntity.badRequest().body("Send SMS failed");
         }
-        return ResponseEntity.ok("Successfully");
+        return ResponseEntity.ok("Successfully: " + otpCode);
       } catch (Exception e) {
         return ResponseEntity.badRequest().body("Set OtpToken failed");
       }
