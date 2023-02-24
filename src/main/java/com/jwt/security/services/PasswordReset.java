@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 public interface PasswordReset {
 
-  ResponseEntity<?> resetPassword(@RequestBody ChangePasswordRequest passwordModel, HttpServletRequest request, PasswordResetToken resetToken);
+  ResponseEntity<?> resetPassword(@RequestBody ChangePasswordRequest passwordModel, HttpServletRequest request);
 
   String savePassword(@RequestParam("token") String token,
                       @RequestBody ChangePasswordRequest password) throws InterruptedException;

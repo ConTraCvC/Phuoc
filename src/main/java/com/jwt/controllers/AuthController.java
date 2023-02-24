@@ -41,8 +41,8 @@ public class AuthController {
 
   @PostMapping("/resetPassword")
   ResponseEntity<?> resetPassword(@RequestBody ChangePasswordRequest resetPassword,
-                                                         HttpServletRequest request, PasswordResetToken resetToken) {
-    return ResponseEntity.ok(passwordReset.resetPassword(resetPassword, request, resetToken));
+                                                         HttpServletRequest request) {
+    return ResponseEntity.ok(passwordReset.resetPassword(resetPassword, request));
   }
 
   @PostMapping("/savePassword")

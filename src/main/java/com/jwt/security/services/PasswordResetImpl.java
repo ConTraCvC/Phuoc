@@ -96,7 +96,7 @@ public class PasswordResetImpl implements PasswordReset{
   }
 
   @Override
-  public ResponseEntity<?> resetPassword(@RequestBody ChangePasswordRequest password, HttpServletRequest request, PasswordResetToken resetToken) {
+  public ResponseEntity<?> resetPassword(@RequestBody ChangePasswordRequest password, HttpServletRequest request) {
     User user = userRepository.findByEmail(password.getEmail());
     if (user != null) {
       String token = UUID.randomUUID().toString();
