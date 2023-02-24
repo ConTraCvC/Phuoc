@@ -161,16 +161,20 @@ public class PasswordResetImpl implements PasswordReset{
           otpCodex.setUser(user.get());
           otpCodex.setRealTime(Date.from(Instant.now().plusMillis(600000)));
           otpCodex.setOtp(otpCode);
-          otpRepository.save(otpCodex);
+          try {
+            otpRepository.save(otpCodex);
+          } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Something went wrong try again later");
+          }
         }
-        Twilio.init("AC428df5bd302a88e1e314d9ece0159181", "67317da33ec54c86c70e7f73b8dcac1c");
-        try {
-          Message.creator(new PhoneNumber("+84866682422"),
-                  new PhoneNumber("+19497495157"),
-                  "Limited reset OTP code for 10 minutes: " + otpCode).create();
-        } catch (Exception e) {
-          return ResponseEntity.badRequest().body("Send SMS failed");
-        }
+//        Twilio.init("AC428df5bd302a88e1e314d9ece0159181", "67317da33ec54c86c70e7f73b8dcac1c");
+//        try {
+//          Message.creator(new PhoneNumber("+84866682422"),
+//                  new PhoneNumber("+19497495157"),
+//                  "Limited reset OTP code for 10 minutes: " + otpCode).create();
+//        } catch (Exception e) {
+//          return ResponseEntity.badRequest().body("Send SMS failed");
+//        }
         return ResponseEntity.ok("Successfully: " + otpCode);
       } catch (Exception e) {
         return ResponseEntity.badRequest().body("Set OtpToken failed");
