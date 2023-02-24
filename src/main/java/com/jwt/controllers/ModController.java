@@ -43,16 +43,6 @@ public class ModController extends Thread {
   @PreAuthorize("hasRole('ADMIN')")
   ResponseEntity<?> deleteUser(@PathVariable Long id, User user ) {
     try {
-//      Thread thread0 = new Thread(() -> refreshTokenRepository.deleteByTokenId(user));
-//      synchronized (refreshTokenRepository.deleteByTokenId(user)) {
-//        thread0.start();
-//        accountControl.waitForBarrier();
-//      }
-//      accountControl.waitForBarrier();
-//      Thread thread1 = new Thread(() -> userRepository.deleteByUserId(id));
-//      synchronized (userRepository.deleteByUserId(id)) {
-//        thread1.start();
-//      }
       Thread thread = new Thread(() -> refreshTokenRepository.deleteByTokenId(user));
         thread.start();
         thread.join();
