@@ -151,16 +151,8 @@ public class PasswordResetImpl implements PasswordReset{
 //            request.getContextPath();
 //  }
 
-  @CachePut(value = "otp")
-  public Otp createOtpToken(Long userId) {
-    Otp otp = new Otp();
-    otp.setUser(userRepository.findById(userId).isPresent() ? userRepository.findById(userId).get() : null);
-    otp.setRealTime(Date.from(Instant.now().plusMillis(600000)));
-    otp.setOtp(100000 + new Random().nextInt(888888));
-    return otp;
-  }
-
   @Override
+  @CachePut("otp")
   public ResponseEntity<?> resetPasswordOTP(ChangePasswordRequest password, Otp otpCodex) {
     Twilio.init("AC428df5bd302a88e1e314d9ece0159181", "f85809bb54f256fee337feaa79a8c4b1");
     Optional<User> user = userRepository.findByEmail(password.getEmail());
@@ -171,19 +163,23 @@ public class PasswordResetImpl implements PasswordReset{
         if (otp.isPresent()) {
           otpRepository.updateOtp(otpCode, Date.from(Instant.now().plusMillis(600000)), user.get().getId());
         } else {
-          otpRepository.save(createOtpToken(user.get().getId()));
+          otpCodex.setUser(user.get());
+          otpCodex.setRealTime(Date.from(Instant.now()));
+          otpCodex.setOtp(otpCode);
+          otpRepository.save(otpCodex);
+        }
+        Twilio.init("AC428df5bd302a88e1e314d9ece0159181", "67317da33ec54c86c70e7f73b8dcac1c");
+        try {
+          Message.creator(new PhoneNumber("+84866682422"),
+                  new PhoneNumber("+19497495157"),
+                  "Limited reset OTP code for 10 minutes: " + otpCode).create();
+        } catch (Exception e) {
+          return ResponseEntity.badRequest().body("Send SMS failed");
         }
         return ResponseEntity.ok("Successfully");
       } catch (Exception e) {
         return ResponseEntity.badRequest().body("Set OtpToken failed");
       }
-    }
-    try {
-      Message.creator(new PhoneNumber("+84866682422"),
-              new PhoneNumber("+19497495157"),
-              "Limited reset OTP code for 10 minutes: " ).create();
-    } catch (Exception e) {
-      return ResponseEntity.badRequest().body("Send SMS failed");
     }
     return ResponseEntity.badRequest().body("Wrong email address");
   }
