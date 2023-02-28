@@ -17,6 +17,6 @@ public interface AccountControl {
 
   ResponseEntity<?> refreshtoken(@Valid @RequestBody RefreshToken request);
 
-  String changePassword(@Valid @RequestBody ChangePasswordRequest changePassword);
+  ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest changePassword);
 
 }

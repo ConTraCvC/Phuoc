@@ -42,6 +42,8 @@ public class AccountControlImpl implements AccountControl {
   private final RefreshTokenService refreshTokenService;
   private final RefreshTokenRepository refreshTokenRepository;
 
+  private String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\S+$).{8,40}$";
+
   @Override
   public ResponseEntity<?> authenticateUser (@Valid @RequestBody User user, HttpServletResponse response) {
     try {
@@ -128,7 +130,6 @@ public class AccountControlImpl implements AccountControl {
         }
       });
     }
-    String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\S+$).{8,40}$";
     Matcher matcher = Pattern.compile(regex).matcher(signUpRequest.getPassword());
     if (matcher.find()) {
       userRepository.save(user);
@@ -139,16 +140,21 @@ public class AccountControlImpl implements AccountControl {
   }
 
   @Override
-  public String changePassword(@Valid @RequestBody ChangePasswordRequest changePassword){
+  public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest changePassword){
     Optional<User> user = userRepository.findByEmail(changePassword.getEmail());
     if (user.isEmpty()) {
-      return "Username not existed";
+      return ResponseEntity.badRequest().body("Username not existed");
     }
     if(!bCryptPasswordEncoder.matches(changePassword.getOldPassword(), user.get().getPassword())){
-      return "Invalid Old Password";
+      return ResponseEntity.badRequest().body("Invalid Old Password");
     }
+    Matcher matcher = Pattern.compile(regex).matcher(changePassword.getNewPassword());
+    if (matcher.find()) {
     userRepository.changePassword(encoder.encode(changePassword.getNewPassword()), changePassword.getEmail());
-    return "Password Changed Successfully";
+    } else {
+      return ResponseEntity.badRequest().body("Password does not match wellFormed !");
+    }
+    return ResponseEntity.ok("Password Changed Successfully");
   }
 
 }
