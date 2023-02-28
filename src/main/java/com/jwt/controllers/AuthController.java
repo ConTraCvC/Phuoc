@@ -34,6 +34,11 @@ public class AuthController {
     return ResponseEntity.ok(accountControl.registerUser(signUpRequest));
   }
 
+  @PostMapping("/refreshToken")
+  ResponseEntity<?> refreshtoken(@Valid @RequestBody RefreshToken request) {
+    return ResponseEntity.ok(accountControl.refreshtoken(request));
+  }
+
   @PostMapping("/changePassword")
   ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest changePassword) {
     return ResponseEntity.ok(accountControl.changePassword(changePassword));
@@ -49,11 +54,6 @@ public class AuthController {
   ResponseEntity<String> savePassword(@RequestParam("token") String token,
                                       @RequestBody ChangePasswordRequest savePassword) throws InterruptedException {
     return ResponseEntity.ok(passwordReset.savePassword(token, savePassword));
-  }
-
-  @PostMapping("/refreshToken")
-  ResponseEntity<?> refreshtoken(@Valid @RequestBody RefreshToken request) {
-    return ResponseEntity.ok(accountControl.refreshtoken(request));
   }
 
   @PostMapping("/otp")
