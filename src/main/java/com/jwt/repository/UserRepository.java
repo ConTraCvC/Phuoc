@@ -27,20 +27,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
   @EntityGraph("roleJoin")
   Optional<User> findByEmail(String email);
 
-
   @Modifying(clearAutomatically = true)
   @Query("update User c set c.password = :password where c.email = :email")
   void changePassword(@Param("password") String password, @Param("email") String email);
-
-  @Modifying(clearAutomatically = true)
-  @Query("delete User c where c.id = :id")
-  void deleteByUserId(@Param("id") @NotNull Long id );
 
   @EntityGraph("roleJoin")
   @Query("select u from User u")
   List<User> findAllUser();
 
-  @Modifying(flushAutomatically = true)
-  @Query("update User u set u.password=:password where u.id=:id")
-  void setNewPassword(@Param("password") String newPassword, @Param("id") Long id);
 }

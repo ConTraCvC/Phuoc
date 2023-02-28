@@ -2,8 +2,6 @@ package com.jwt.controllers;
 
 import com.jwt.models.User;
 import com.jwt.payload.request.ChangePasswordRequest;
-import com.jwt.repository.OtpRepository;
-import com.jwt.repository.RefreshTokenRepository;
 import com.jwt.repository.UserRepository;
 import com.jwt.security.services.PasswordResetImpl;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +20,6 @@ import java.util.Optional;
 public class ModController extends Thread {
   private final UserRepository userRepository;
   private final PasswordResetImpl passwordReset;
-  private final RefreshTokenRepository refreshTokenRepository;
-  private final OtpRepository otpRepository;
 
   @GetMapping("/mod")
   @PreAuthorize("hasRole('MODERATOR') || hasRole('ADMIN')")
@@ -37,19 +33,6 @@ public class ModController extends Thread {
     Optional<User> user = userRepository.findById(id);
     return user.map(response -> ResponseEntity.ok().body(response))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-  }
-
-  @DeleteMapping("/admin/{id}")
-  @PreAuthorize("hasRole('ADMIN')")
-  ResponseEntity<?> deleteUser(@PathVariable Long id, User user ) {
-    try {
-      Thread thread = new Thread(() -> refreshTokenRepository.deleteByTokenId(user));
-        thread.start();
-        thread.join();
-      Thread thread1 = new Thread(() -> userRepository.deleteByUserId(id));
-      thread1.start();
-    } catch (Exception e) {ResponseEntity.badRequest().body(e.getMessage());}
-    return ResponseEntity.ok("Successfully");
   }
 
   @GetMapping(value = "/sendSMS")

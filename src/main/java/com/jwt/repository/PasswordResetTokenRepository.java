@@ -30,11 +30,6 @@ public interface PasswordResetTokenRepository extends JpaRepository<PasswordRese
 
   @Transactional
   @Modifying(clearAutomatically = true)
-  @Query("update PasswordResetToken p set p.expirationTime=:expirationTime where p.id=:id")
-  void setExpiredTime(@Param("expirationTime") Date expirationTime, @Param("id") Long id);
-
-  @Transactional
-  @Modifying(clearAutomatically = true)
   @Query(value = "update password_reset_token set token=:token, expiration_time=:expiration_time where user_id=:user_id", nativeQuery = true)
   void updateToken(@Param("token") String token, @Param("expiration_time") Date date, @Param("user_id") Long id);
 }
