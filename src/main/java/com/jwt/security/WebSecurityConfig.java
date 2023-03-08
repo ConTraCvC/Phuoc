@@ -81,9 +81,8 @@ public class WebSecurityConfig {
     http.cors().and().csrf().disable()
         .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-        .authorizeHttpRequests().requestMatchers("/auth/**").permitAll()
-            .requestMatchers("/kafka/**").permitAll()
-        .anyRequest().authenticated();
+            .authorizeHttpRequests().requestMatchers("/auth/**", "/kafka/**").permitAll()
+            .anyRequest().authenticated();
     
     http.authenticationProvider(authenticationProvider());
 
