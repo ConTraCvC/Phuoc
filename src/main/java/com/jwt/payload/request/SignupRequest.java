@@ -1,10 +1,11 @@
 package com.jwt.payload.request;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.Set;
-
-import javax.validation.constraints.*;
 
 @Data
 public class SignupRequest {

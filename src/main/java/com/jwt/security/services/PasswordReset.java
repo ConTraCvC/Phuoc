@@ -2,11 +2,10 @@ package com.jwt.security.services;
 
 import com.jwt.models.PasswordResetToken;
 import com.jwt.payload.request.ChangePasswordRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import javax.servlet.http.HttpServletRequest;
 
 public interface PasswordReset {
 

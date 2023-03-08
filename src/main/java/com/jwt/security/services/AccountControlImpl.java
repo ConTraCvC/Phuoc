@@ -8,6 +8,8 @@ import com.jwt.payload.response.RefreshTokenResponse;
 import com.jwt.payload.response.UserResponse;
 import com.jwt.repository.*;
 import com.jwt.security.jwt.JwtUtils;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +23,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

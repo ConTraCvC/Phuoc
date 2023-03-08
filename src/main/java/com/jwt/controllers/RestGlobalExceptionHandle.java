@@ -3,14 +3,12 @@ package com.jwt.controllers;
 import com.jwt.exception.BadRequestException;
 import com.jwt.exception.CustomErrorException;
 import com.jwt.payload.response.ErrorMessage;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,7 +17,6 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.servlet.http.HttpServletRequest;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.time.LocalDateTime;
@@ -109,14 +106,12 @@ public class RestGlobalExceptionHandle extends ResponseEntityExceptionHandler {
             .body(errorMsg);
   }
 
-  // error handle for @Valid
   @NotNull
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                 HttpHeaders headers,
-                                                                @NotNull HttpStatus status,
-                                                                @NotNull WebRequest request) {
-
+                                                                HttpStatusCode status,
+                                                                WebRequest request) {
     headers.setContentType(MediaType.APPLICATION_JSON);
     //Get all errors
     List<String> errors = ex.getBindingResult()
