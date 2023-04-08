@@ -16,8 +16,8 @@ public class KafkaTest {
 
   @PostMapping("/kafka")
   public ResponseEntity<?> sendTransfer() {
-    Long value = 1L;
-    kafkaTemplate.send("phuoc", value.toString());
+    long value = 1L;
+    kafkaTemplate.send("phuoc", Long.toString(value));
     return ResponseEntity.ok("Transfer complete: " + value);
   }
 }
