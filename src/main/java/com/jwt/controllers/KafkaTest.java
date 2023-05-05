@@ -52,33 +52,6 @@ public class KafkaTest {
     return ResponseEntity.ok("Transfer complete: " + str);
   }
 
-  public static Document arrayListToXml (ArrayList<String> list) throws Exception {
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    DocumentBuilder builder = factory.newDocumentBuilder();
-    Document document = builder.newDocument();
-
-    Element root = document.createElement(TRANSACTION);
-    Element common = document.createElement(COMMON);
-    Element individual = document.createElement(INDIVIDUAL);
-
-    List<String> commonField = new ArrayList<>();
-    commonField.add("coNo");
-    commonField.add("msgDscd");
-    commonField.add("reqRspDscd");
-    commonField.add("msgNo");
-    commonField.add("tmsDt");
-    commonField.add("tmsTm");
-    commonField.add("dataCnt");
-
-    for (String s : commonField) {
-      String key = String.valueOf(s);
-      Element commonElement = document.createElement(key);
-      commonElement.setTextContent(common.getTextContent());
-      common.appendChild(commonElement);
-    }
-    return document;
-  }
-
   @KafkaListener(
           topics = "xml",
           groupId = "groupId",
