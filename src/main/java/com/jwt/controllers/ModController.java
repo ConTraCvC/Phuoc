@@ -5,7 +5,7 @@ import com.jwt.models.User;
 import com.jwt.payload.request.ChangePasswordRequest;
 import com.jwt.repository.UserRepository;
 import com.jwt.security.server.PortService;
-import com.jwt.security.services.PasswordResetImpl;
+import com.jwt.security.services.PasswordReset;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.LifecycleException;
 import org.springframework.http.HttpStatus;
@@ -22,7 +22,7 @@ import java.util.Optional;
 @RequestMapping("/auth")
 public class ModController extends Thread {
   private final UserRepository userRepository;
-  private final PasswordResetImpl passwordReset;
+  private final PasswordReset passwordReset;
   private final PortService portService;
 
   @GetMapping("/mod")
