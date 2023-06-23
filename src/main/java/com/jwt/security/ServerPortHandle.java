@@ -1,6 +1,5 @@
 package com.jwt.security;
 
-import com.jwt.models.CustomerPort;
 import com.jwt.repository.PortsRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.connector.Connector;
@@ -10,7 +9,6 @@ import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Configuration
