@@ -50,7 +50,7 @@ public class ModController extends Thread {
   }
 
   @DeleteMapping(value = "/deletePort")
-  ResponseEntity<?> deletePort(@RequestBody CustomerPort port) throws LifecycleException, InterruptedException {
+  ResponseEntity<?> deletePort(@RequestBody CustomerPort port) throws LifecycleException {
     return ResponseEntity.ok(portService.deletePort(port));
   }
 }

@@ -1,5 +1,10 @@
 package com.jwt.security;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +24,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.jwt.security.jwt.AuthEntryPointJwt;
 import com.jwt.security.jwt.AuthTokenFilter;
 import com.jwt.security.services.UserDetailsServiceImpl;
+import org.springframework.web.filter.OncePerRequestFilter;
 
+import java.io.IOException;
 import java.util.Properties;
 
 @RequiredArgsConstructor
@@ -28,7 +35,7 @@ import java.util.Properties;
     // securedEnabled = true,
     // jsr250Enabled = true,
     prePostEnabled = true)
-public class WebSecurityConfig {
+public class WebSecurityConfig extends OncePerRequestFilter {
 
   private final UserDetailsServiceImpl userDetailsService;
   private final AuthEntryPointJwt unauthorizedHandler;
@@ -89,5 +96,14 @@ public class WebSecurityConfig {
     http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     
     return http.build();
+  }
+
+  @Override
+  protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
+    int port = request.getLocalPort();
+    if (port == 8082) {
+
+    }
+    filterChain.doFilter(request, response);
   }
 }
