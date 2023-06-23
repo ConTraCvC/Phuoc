@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 public interface PortsRepository extends JpaRepository<CustomerPort, Long> {
 
   @Query(value = "select ports from customer_port", nativeQuery = true)
-  int findAllBy();
+  int[] findAllBy();
 }

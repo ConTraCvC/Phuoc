@@ -8,6 +8,7 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,23 +29,24 @@ public class ServerPortHandle implements WebServerFactoryCustomizer<TomcatServle
 
   @Override
   public void customize(TomcatServletWebServerFactory factory) {
-    int ports = portsRepository.findAllBy();
+    int[] ports = portsRepository.findAllBy();
     Connector[] additionalsConnector = additionalsConnector(ports);
     if (additionalsConnector != null && additionalsConnector.length>0) {
       factory.addAdditionalTomcatConnectors(additionalsConnector);
     }
   }
 
-  public Connector[] additionalsConnector(int ports) {
+  public Connector[] additionalsConnector(int[] ports) {
     if (portRangeStart < 8082 || portRangeEnd > 20000 || portRangeStart > portRangeEnd) {
       return null;
     }
-    Set<Connector> port = new HashSet<>();
-    Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
-    connector.setScheme("http");
-    connector.setPort(ports);
-    port.add(connector);
-
-    return port.toArray(new Connector[]{});
+    Set<Connector> cusPorts = new HashSet<>();
+    for (int port : ports) {
+      Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
+      connector.setScheme("http");
+      connector.setPort(port);
+      cusPorts.add(connector);
+    }
+    return cusPorts.toArray(new Connector[]{});
   }
 }
