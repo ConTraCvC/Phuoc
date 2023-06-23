@@ -14,5 +14,5 @@ public class CustomerPort {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  private int ports;
+  private int port;
 }

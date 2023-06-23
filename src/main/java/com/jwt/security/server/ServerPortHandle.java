@@ -1,4 +1,4 @@
-package com.jwt.security;
+package com.jwt.security.server;
 
 import com.jwt.repository.PortsRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +8,6 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 

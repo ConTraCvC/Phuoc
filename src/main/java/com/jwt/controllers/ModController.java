@@ -1,10 +1,13 @@
 package com.jwt.controllers;
 
+import com.jwt.models.CustomerPort;
 import com.jwt.models.User;
 import com.jwt.payload.request.ChangePasswordRequest;
 import com.jwt.repository.UserRepository;
+import com.jwt.security.server.PortService;
 import com.jwt.security.services.PasswordResetImpl;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.LifecycleException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,6 +23,7 @@ import java.util.Optional;
 public class ModController extends Thread {
   private final UserRepository userRepository;
   private final PasswordResetImpl passwordReset;
+  private final PortService portService;
 
   @GetMapping("/mod")
   @PreAuthorize("hasRole('MODERATOR') || hasRole('ADMIN')")
@@ -40,4 +44,13 @@ public class ModController extends Thread {
     return ResponseEntity.ok(passwordReset.resetPasswordOTP(password));
   }
 
+  @PostMapping(value = "/createPort")
+  ResponseEntity<?> createPort(@RequestBody CustomerPort port) throws LifecycleException {
+    return ResponseEntity.ok(portService.portRegister(port));
+  }
+
+  @DeleteMapping(value = "/deletePort")
+  ResponseEntity<?> deletePort(@RequestBody CustomerPort port) throws LifecycleException, InterruptedException {
+    return ResponseEntity.ok(portService.deletePort(port));
+  }
 }
