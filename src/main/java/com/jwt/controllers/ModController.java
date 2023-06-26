@@ -46,11 +46,13 @@ public class ModController extends Thread {
   }
 
   @PostMapping(value = "/createPort")
+  @PreAuthorize("hasRole('ADMIN')")
   ResponseEntity<?> createPort(@RequestBody CustomerPort port, HttpServletRequest request) throws LifecycleException {
     return ResponseEntity.ok(portService.portRegister(port, request));
   }
 
   @DeleteMapping(value = "/deletePort")
+  @PreAuthorize("hasRole('ADMIN')")
   ResponseEntity<?> deletePort(@RequestBody CustomerPort port, HttpServletRequest request) throws LifecycleException {
     return ResponseEntity.ok(portService.deletePort(port, request));
   }
