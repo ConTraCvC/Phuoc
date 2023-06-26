@@ -6,6 +6,7 @@ import com.jwt.payload.request.ChangePasswordRequest;
 import com.jwt.repository.UserRepository;
 import com.jwt.security.server.PortService;
 import com.jwt.security.services.PasswordReset;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.LifecycleException;
 import org.springframework.http.HttpStatus;
@@ -45,12 +46,12 @@ public class ModController extends Thread {
   }
 
   @PostMapping(value = "/createPort")
-  ResponseEntity<?> createPort(@RequestBody CustomerPort port) throws LifecycleException {
-    return ResponseEntity.ok(portService.portRegister(port));
+  ResponseEntity<?> createPort(@RequestBody CustomerPort port, HttpServletRequest request) throws LifecycleException {
+    return ResponseEntity.ok(portService.portRegister(port, request));
   }
 
   @DeleteMapping(value = "/deletePort")
-  ResponseEntity<?> deletePort(@RequestBody CustomerPort port) throws LifecycleException {
-    return ResponseEntity.ok(portService.deletePort(port));
+  ResponseEntity<?> deletePort(@RequestBody CustomerPort port, HttpServletRequest request) throws LifecycleException {
+    return ResponseEntity.ok(portService.deletePort(port, request));
   }
 }

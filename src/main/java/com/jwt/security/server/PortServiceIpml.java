@@ -19,10 +19,8 @@ public class PortServiceIpml implements PortService {
 
   private final PortServiceListener portServiceListener;
 
-  private final HttpServletRequest request;
-
   @Override
-  public ResponseEntity<?> portRegister(@RequestBody CustomerPort port) throws LifecycleException {
+  public ResponseEntity<?> portRegister(@RequestBody CustomerPort port, HttpServletRequest request) throws LifecycleException {
     Optional<CustomerPort> ports = portsRepository.findByPort(port.getPort());
     int adminPort = request.getLocalPort();
     if (ports.isPresent()) {
@@ -40,7 +38,7 @@ public class PortServiceIpml implements PortService {
   }
 
   @Override
-  public ResponseEntity<?> deletePort(@RequestBody CustomerPort port) throws LifecycleException {
+  public ResponseEntity<?> deletePort(@RequestBody CustomerPort port, HttpServletRequest request) throws LifecycleException {
     int adminPort = request.getLocalPort();
     if(adminPort == 8082){
       portsRepository.deletePort(port.getPort());
