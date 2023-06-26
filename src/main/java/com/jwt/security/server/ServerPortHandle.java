@@ -6,12 +6,12 @@ import org.apache.catalina.connector.Connector;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Configuration
+@Component
 @RequiredArgsConstructor
 public class ServerPortHandle implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
 
