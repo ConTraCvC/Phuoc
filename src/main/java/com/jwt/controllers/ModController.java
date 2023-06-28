@@ -5,6 +5,7 @@ import com.jwt.models.User;
 import com.jwt.payload.request.ChangePasswordRequest;
 import com.jwt.repository.UserRepository;
 import com.jwt.security.server.PortService;
+import com.jwt.security.server.ServerPortHandle;
 import com.jwt.security.services.PasswordReset;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,7 +31,13 @@ public class ModController extends Thread {
 
   @GetMapping("/mod")
   @PreAuthorize("hasRole('MODERATOR') || hasRole('ADMIN')")
-  List<User> getUser() {
+  List<User> getUser() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    // Reflection test
+//    Method test = Test.class.getDeclaredMethod("reflection", int.class, int.class);
+//    test.setAccessible(true); // Access private methods
+//    Test test1 = new Test();
+//    int tests = (Integer) test.invoke(test1, 67, 99);
+//    System.out.println(tests);
     return userRepository.findAllUser();
   }
 
