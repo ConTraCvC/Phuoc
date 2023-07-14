@@ -17,7 +17,7 @@ import lombok.Setter;
     uniqueConstraints = { 
       @UniqueConstraint(columnNames = "username"),
       @UniqueConstraint(columnNames = "email") 
-    })
+    }, schema = "dev1")
 @NamedEntityGraph(name = "roleJoin", includeAllAttributes = true ,attributeNodes = {
         @NamedAttributeNode(value = "roles", subgraph = "roles")
 }, subgraphs = @NamedSubgraph(name = "roles", attributeNodes = { @NamedAttributeNode("roleCode") }))

@@ -15,6 +15,7 @@ import java.util.Date;
 @NamedEntityGraph(name = "tokenJoin", includeAllAttributes = true ,attributeNodes = {
         @NamedAttributeNode(value = "token")
 })
+@Table(schema = "dev1")
 public class PasswordResetToken {
 
   private static final int EXPIRATION_TIME = 10;

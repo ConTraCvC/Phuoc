@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "customer_port")
+@Table(name = "customer_port", schema = "dev1")
 public class CustomerPort {
 
   @Id

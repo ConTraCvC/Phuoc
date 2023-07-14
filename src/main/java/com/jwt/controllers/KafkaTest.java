@@ -41,12 +41,12 @@ public class KafkaTest {
     return ResponseEntity.ok("Transfer complete: " + str);
   }
 
-//  @KafkaListener(
-//          topics = "xml",
-//          groupId = "groupId",
-//          containerFactory = "kafkaListenerContainerFactory"
-//  )
-//  public void testPrams(String data) {
-//    System.out.println(data);
-//  }
+  @KafkaListener(
+          topics = "xml",
+          groupId = "groupId",
+          containerFactory = "kafkaListenerContainerFactory"
+  )
+  public void testPrams(String data) {
+    System.out.println(data);
+  }
 }

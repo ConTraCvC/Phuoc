@@ -15,6 +15,7 @@ import java.util.Date;
 @NamedEntityGraph(name = "otpJoin", includeAllAttributes = true ,attributeNodes = {
         @NamedAttributeNode(value = "otp")
 })
+@Table(schema = "dev1")
 public class Otp {
 
   private static final int EXPIRATION_TIME = 10;

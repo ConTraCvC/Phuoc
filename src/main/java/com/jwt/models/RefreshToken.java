@@ -12,6 +12,7 @@ import java.time.Instant;
 @NamedEntityGraph(name = "joined", includeAllAttributes = true ,attributeNodes = {
         @NamedAttributeNode(value = "user", subgraph = "user")
 }, subgraphs = @NamedSubgraph(name = "user", attributeNodes = { @NamedAttributeNode("roles") }))
+@Table(schema = "dev1")
 public class RefreshToken {
 
   @Id
