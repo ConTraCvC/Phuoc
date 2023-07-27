@@ -22,18 +22,14 @@ public class KafkaTest {
 
   @PostMapping("/kafka")
   public ResponseEntity<?> sendTransfer() {
-    ArrayList<String> list = new ArrayList<>();
+    StringBuilder sb = new StringBuilder();
     try (BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\Dell\\Desktop\\PR001.dat"))) {
       String line;
       while ((line = br.readLine()) != null) {
-        list.add(line);
+        sb.append(line);
       }
     } catch (IOException e) {
       e.printStackTrace();
-    }
-    StringBuilder sb = new StringBuilder();
-    for (String s : list) {
-      sb.append(s);
     }
     String str = sb.toString();
     kafkaTemplate.send("string", str);
