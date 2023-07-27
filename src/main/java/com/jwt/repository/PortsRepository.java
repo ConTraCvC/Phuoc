@@ -12,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface PortsRepository extends JpaRepository<CustomerPort, Long> {
 
-  @Query(value = "select port from customer_port", nativeQuery = true)
+  @Query(value = "select e.port from CustomerPort e")
   int[] findAllBy();
 
   Optional<CustomerPort> findByPort(int port);
