@@ -11,6 +11,7 @@ import com.jwt.security.jwt.JwtUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -45,7 +46,7 @@ public class AccountControlImpl implements AccountControl {
   private String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\S+$).{8,40}$";
 
   @Override
-  public ResponseEntity<?> authenticateUser (@Valid @RequestBody User user, HttpServletResponse response) {
+  public ResponseEntity<?> authenticateUser (@Valid @RequestBody User user, HttpServletResponse response) throws ValidationException {
     try {
       Authentication authentication = authenticationManager.authenticate(
               new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
@@ -95,7 +96,7 @@ public class AccountControlImpl implements AccountControl {
   }
 
   @Override
-  public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+  public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) throws ValidationException {
 
     Optional<User> users = userRepository.findByEmail(signUpRequest.getEmail());
     if (users.isPresent()){

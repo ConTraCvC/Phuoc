@@ -8,7 +8,6 @@ import com.jwt.security.services.AccountControl;
 import com.jwt.security.services.PasswordReset;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,22 +23,22 @@ public class AuthController {
   private final PasswordReset passwordReset;
 
   @PostMapping("/sign-in")
-  ResponseEntity<?> authenticateUser(@Valid @RequestBody User user, HttpServletResponse response) {
+  ResponseEntity<?> authenticateUser(@RequestBody User user, HttpServletResponse response) {
     return ResponseEntity.ok(accountControl.authenticateUser(user, response));
   }
 
   @PostMapping("/sign-up")
-  ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+  ResponseEntity<?> registerUser(@RequestBody SignupRequest signUpRequest) {
     return ResponseEntity.ok(accountControl.registerUser(signUpRequest));
   }
 
   @PostMapping("/refreshToken")
-  ResponseEntity<?> refreshtoken(@Valid @RequestBody RefreshToken request) {
+  ResponseEntity<?> refreshtoken(@RequestBody RefreshToken request) {
     return ResponseEntity.ok(accountControl.refreshtoken(request));
   }
 
   @PostMapping("/changePassword")
-  ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest changePassword) {
+  ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePassword) {
     return ResponseEntity.ok(accountControl.changePassword(changePassword));
   }
 

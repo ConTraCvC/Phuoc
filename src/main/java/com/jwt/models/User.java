@@ -27,7 +27,7 @@ public class User {
   private Long id;
 
   @NotBlank
-  @Size(max = 20)
+  @Size(min = 3, max = 20)
   private String username;
 
   @JsonInclude(JsonInclude.Include.NON_NULL)
