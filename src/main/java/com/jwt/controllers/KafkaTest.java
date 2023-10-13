@@ -1,10 +1,13 @@
 package com.jwt.controllers;
 
+import com.jwt.idata.DataSet;
 import com.jwt.models.FinalObjectLength;
 import com.jwt.models.User;
 import com.jwt.models.XmlEle;
 import com.jwt.repository.XmlElementRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -23,9 +26,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/")
@@ -40,6 +41,9 @@ public class KafkaTest {
   private final PadService padService;
 
   private final XmlElementRepository repository;
+
+  DataSet ds = new DataSet();
+
   private final int[] array = new int[]{FinalObjectLength.coNo_SIZE, FinalObjectLength.msgDscd_SIZE, FinalObjectLength.reqRsqDscd_SIZE,
           FinalObjectLength.msgNo_SIZE, FinalObjectLength.tmsDt_SIZE, FinalObjectLength.tmsTm_SIZE, FinalObjectLength.rspCd_SIZE, FinalObjectLength.idCd_SIZE,
           FinalObjectLength.dataCount_SIZE, FinalObjectLength.etcAr_SIZE, FinalObjectLength.wdracNo_SIZE, FinalObjectLength.actPwno_SIZE,
@@ -67,29 +71,32 @@ public class KafkaTest {
     return ResponseEntity.ok("Transfer complete: " + result);
   }
 
-  private Document convertStringToDocument(String xmlStr) throws ParserConfigurationException {
+  private Document convertStringToDocument(String xmlStr) {
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    DocumentBuilder builder = factory.newDocumentBuilder();
-    Document doc;
+    DocumentBuilder builder;
     try {
-      doc = builder.parse(new InputSource(new StringReader(xmlStr)));
-    } catch (IOException | SAXException e) {
+      builder = factory.newDocumentBuilder();
+      return builder.parse(new InputSource(new StringReader(xmlStr)));
+    } catch (Exception e) {
       throw new RuntimeException(e);
     }
-    return doc;
   }
 
-  @KafkaListener(
-          topics = "xml",
-          groupId = "groupId",
-          containerFactory = "kafkaListenerContainerFactory"
-  )
-  public void testPrams(String data) throws ParserConfigurationException {
+//  @KafkaListener(
+//          topics = "xml",
+//          groupId = "groupId",
+//          containerFactory = "kafkaListenerContainerFactory"
+//  )
+  public void testPrams(String data){
     XmlEle xml_ele = new XmlEle();
-    String n = "N";
-    Map<Object, Object> contents = new HashMap<>();
+//    String n = "N";
     StringBuilder sb = new StringBuilder();
     Document xml = convertStringToDocument(data);
+
+    ArrayList<Object> part = new ArrayList<>();
+    for (int ix: array) {
+      part.add(ix);
+    }
 
     Node user = xml.getFirstChild();
     NodeList childs = user.getChildNodes();
@@ -97,21 +104,28 @@ public class KafkaTest {
 
     for (int i=0; i<childs.getLength(); ++i) {
       child = childs.item(i);
+
       if (common.equals(child.getNodeName())) {
         Node parentNode = xml.getElementsByTagName(child.getNodeName()).item(0);
         NodeList commonNodes = parentNode.getChildNodes();
         Node commonNode;
         for (int i2=0; i2<commonNodes.getLength(); ++i2) {
           commonNode = commonNodes.item(i2);
-          contents.put(commonNode.getNodeName(), commonNode.getTextContent());
+          System.out.println(commonNode.getTextContent());
+          for (Object o : part) {
+            int index_len = Integer.parseInt(o.toString());
+            ds.putField(commonNode.getNodeName(), padService.rpad(commonNode.getTextContent(), index_len, " "));
+//            System.out.println(o);
+          }
         }
+//        System.out.println(part);
       } else if (individual.equals(child.getNodeName())) {
         Node parentNode = xml.getElementsByTagName(child.getNodeName()).item(0);
         NodeList individualNodes = parentNode.getChildNodes();
         Node individualNode;
         for (int i2=0; i2<individualNodes.getLength(); ++i2) {
           individualNode = individualNodes.item(i2);
-          contents.put(individualNode.getNodeName(), individualNode.getTextContent());
+          ds.putField(individualNode.getNodeName(), individualNode.getTextContent());
           if (individualNode.getNodeName().equalsIgnoreCase("wdrAm")) {
             if (repository.findByField("wdrAm").isPresent()) {
               System.out.println("exists");
@@ -138,15 +152,14 @@ public class KafkaTest {
               }
               repository.save(xml_ele);
             }
-          } else if (!individualNode.getNodeName().equalsIgnoreCase("fee")
-                  && !individualNode.getNodeName().equalsIgnoreCase("wdrAm")) {
-
           }
         }
       }
     }
-    for (Object content : contents.keySet()) {
-      sb.append(content);
+    Iterator keys = ds.getFieldKeys();
+    while (keys.hasNext()) {
+      String key = String.valueOf(keys.next());
+      sb.append(ds.getField(key));
     }
     result = sb.toString();
     System.out.println(sb);

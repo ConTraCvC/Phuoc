@@ -23,11 +23,11 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
 
   @Modifying(clearAutomatically = true)
   // delete all except the newest one group by user_id.
-  @Query(value = "delete from refresh_token where (user_id,id) not in (select user_id, max(id) from refresh_token group by user_id)", nativeQuery = true)
+  @Query(value = "delete from dev1.refresh_token where (user_id,id) not in (select user_id, max(id) from dev1.refresh_token group by user_id)", nativeQuery = true)
   void deleteAllRf();
 
   @Modifying(clearAutomatically = true)
-  @Query(value = "update refresh_token set token=:token, expiry_date=:expiry_date where user_id=:user_id", nativeQuery = true)
+  @Query(value = "update dev1.refresh_token set token=:token, expiry_date=:expiry_date where user_id=:user_id", nativeQuery = true)
   void updateRefreshToken(@Param("token") String token, @Param("expiry_date") Date date, @Param("user_id") Long id);
 
 }

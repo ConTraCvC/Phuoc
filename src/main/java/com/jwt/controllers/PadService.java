@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class PadService {
-  public static String lpad(String str, int length, String pad) {
+  public String lpad(String str, int length, String pad) {
     if (str == null) {
       str = "";
     }
@@ -34,21 +34,23 @@ public class PadService {
     }
   }
 
-  public static String rpad(String str, int length, String pad) {
+  public String rpad(String str, int length, String pad) {
     if (str == null) {
       str = "";
     }
     if (pad == null) {
       pad = " ";
     }
-    if (str.length() > length) {
-      return str.substring(str.length() - length);
-    } else if (str.length() == length) {
+    int srcLength = str.length();
+    if (srcLength > length) {
+      return str.substring(srcLength - length);
+    } else if (srcLength == length) {
       return str;
     } else {
-      int blkLength = length - str.length();
-      int count = blkLength / pad.length();
-      int mod = blkLength % pad.length();
+      int padLength = pad.length();
+      int blkLength = length - srcLength;
+      int count = blkLength / padLength;
+      int mod = blkLength % padLength;
 
       StringBuilder sb = new StringBuilder();
       sb.append(str);
