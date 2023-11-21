@@ -43,7 +43,7 @@ public class AccountControlImpl implements AccountControl {
   private final RefreshTokenService refreshTokenService;
   private final RefreshTokenRepository refreshTokenRepository;
 
-  private static final Pattern regex = Pattern.compile("(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\\\S+$).{8,40}$");
+  private static final Pattern regex = Pattern.compile("\"(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\\\S+$).{8,40}$");
   private static boolean isAlphaBNumeric(String s) {
     return regex.matcher(s).matches();
   }
