@@ -43,7 +43,10 @@ public class AccountControlImpl implements AccountControl {
   private final RefreshTokenService refreshTokenService;
   private final RefreshTokenRepository refreshTokenRepository;
 
-  private String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\S+$).{8,40}$";
+  private static final Pattern regex = Pattern.compile("(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\\\S+$).{8,40}$");
+  private static boolean isAlphaBNumeric(String s) {
+    return regex.matcher(s).matches();
+  }
 
   @Override
   public ResponseEntity<?> authenticateUser (@Valid @RequestBody User user, HttpServletResponse response) throws ValidationException {
@@ -131,8 +134,7 @@ public class AccountControlImpl implements AccountControl {
         }
       });
     }
-    Matcher matcher = Pattern.compile(regex).matcher(signUpRequest.getPassword());
-    if (matcher.find()) {
+    if (isAlphaBNumeric(signUpRequest.getPassword())) {
       userRepository.save(user);
       return ResponseEntity.ok("User registered successfully !");
     } else {
@@ -149,8 +151,7 @@ public class AccountControlImpl implements AccountControl {
     if(!bCryptPasswordEncoder.matches(changePassword.getOldPassword(), user.get().getPassword())){
       return ResponseEntity.badRequest().body("Invalid Old Password");
     }
-    Matcher matcher = Pattern.compile(regex).matcher(changePassword.getNewPassword());
-    if (matcher.find()) {
+    if (isAlphaBNumeric(changePassword.getNewPassword())) {
     userRepository.changePassword(encoder.encode(changePassword.getNewPassword()), changePassword.getEmail());
     } else {
       return ResponseEntity.badRequest().body("Password does not match wellFormed !");

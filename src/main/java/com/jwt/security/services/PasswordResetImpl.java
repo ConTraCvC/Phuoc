@@ -43,7 +43,10 @@ public class PasswordResetImpl implements PasswordReset{
   private final JavaMailSender mailSender;
 
   // Regex pattern to match
-  private final String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\S+$).{8,40}$";
+  private static final Pattern regex = Pattern.compile("\"(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&_+=()-])(?=\\\\S+$).{8,40}$");
+  private static boolean isAlphaBNumeric (String s) {
+    return regex.matcher(s).matches();
+  }
 
   private String validatePasswordResetToken(String token) {
     PasswordResetToken passwordResetToken
@@ -177,8 +180,7 @@ public class PasswordResetImpl implements PasswordReset{
     }
     Optional<User> user = Optional.ofNullable(passwordResetTokenRepository.findByToken(token).getUser());
     if(user.isPresent()){
-      Matcher matcher = Pattern.compile(regex).matcher(password.getNewPassword());
-      if (matcher.find()){
+      if (isAlphaBNumeric(password.getNewPassword())){
         changePassword(user.get(), encoder.encode(password.getNewPassword()));
         return "Password Reset Successfully !";}
       else { return "Password does not match wellFormed !";}
@@ -198,8 +200,7 @@ public class PasswordResetImpl implements PasswordReset{
     Optional<User> user = Optional.ofNullable(otpRepository.findByOtp(otp).getUser());
     Otp otpCode = otpRepository.findByOtp(otp);
     if(user.isPresent()){
-      Matcher matcher = Pattern.compile(regex).matcher(password.getNewPassword());
-      if(matcher.find()){
+      if(isAlphaBNumeric(password.getNewPassword())){
         try {
           changePassword(user.get(), encoder.encode(password.getNewPassword()));
         } catch (Exception e) {

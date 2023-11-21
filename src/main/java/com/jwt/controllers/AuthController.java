@@ -33,7 +33,7 @@ public class AuthController {
   }
 
   @PostMapping("/refreshToken")
-  ResponseEntity<?> refreshtoken(@RequestBody RefreshToken request) {
+  ResponseEntity<?> refreshToken(@RequestBody RefreshToken request) {
     return ResponseEntity.ok(accountControl.refreshtoken(request));
   }
 

@@ -5,6 +5,7 @@ import java.util.*;
 
 import com.jwt.models.User;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -16,8 +17,10 @@ public class UserResponse implements UserDetails {
 
   @Serial
   private static final long serialVersionUID = 1L;
+  @Getter
   private Long id;
   private String username;
+  @Getter
   private String email;
   @JsonIgnore
   private String password;
@@ -38,14 +41,6 @@ public class UserResponse implements UserDetails {
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return authorities;
-  }
-
-  public Long getId() {
-    return id;
-  }
-
-  public String getEmail() {
-    return email;
   }
 
   @Override
